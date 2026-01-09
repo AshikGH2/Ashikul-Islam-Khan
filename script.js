@@ -1,20 +1,20 @@
 /* ==========================================================================
    GOOGLE DRIVE API CONFIG
-=========================================================================== */
+   ========================================================================== */
 
 const API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E";
 const CLIENT_ID = "933969038608-s5kuf61bdlbp49jf729fppjiabel9sce.apps.googleusercontent.com";
 
 const MY_WORKS_FOLDER_ID = "1_H5wCZbyc8LMhcmb2wK3MkIBdf4hrjEd";
 const CONTENTS_FOLDER_ID = "1ioaYVdHLgGObZvDz2RtkyK8DpvSHTXMI";
-const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
+const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2"; // contains CV + profile.jpg
 
 let gapiLoaded = false;
 
 
 /* ==========================================================================
    INITIAL LOAD
-=========================================================================== */
+   ========================================================================== */
 
 window.addEventListener("load", () => {
     fadeOutLoader();
@@ -25,9 +25,10 @@ window.addEventListener("load", () => {
     loadDriveAPI();
 });
 
+
 /* ==========================================================================
    LOAD GOOGLE DRIVE API
-=========================================================================== */
+   ========================================================================== */
 
 function loadDriveAPI() {
     const script = document.createElement("script");
@@ -45,42 +46,62 @@ async function initDrive() {
 
         gapiLoaded = true;
 
+        loadCVAndProfile();
         loadMyWorks();
         loadContentsVideos();
-        loadLatestCV();
 
     } catch (err) {
         console.error("Drive init error:", err);
     }
 }
 
+
 /* ==========================================================================
-   LOAD LATEST CV (Auto-update)
-=========================================================================== */
+   LOAD CV + PROFILE PHOTO
+   ========================================================================== */
 
-async function loadLatestCV() {
-    const query = `'${CV_FOLDER_ID}' in parents and mimeType != 'application/vnd.google-apps.folder'`;
-
-    const response = await gapi.client.drive.files.list({
-        q: query,
-        orderBy: "modifiedTime desc",
-        fields: "files(id, name, modifiedTime, webViewLink, mimeType)"
+async function loadCVAndProfile() {
+    const files = await gapi.client.drive.files.list({
+        q: `'${CV_FOLDER_ID}' in parents`,
+        fields: "files(id, name, mimeType, webViewLink, thumbnailLink)"
     });
 
-    if (!response.result.files.length) return;
+    if (!files.result.files.length) return;
 
-    const cv = response.result.files[0];
+    let cvFile = null;
+    let profileFile = null;
 
-    // Update CV download button
-    const btn = document.getElementById("cv-download-btn");
-    btn.href = cv.webViewLink;
+    files.result.files.forEach(f => {
+        if (f.mimeType === "application/pdf") cvFile = f;
+        if (f.name.toLowerCase().includes("profile")) profileFile = f;
+    });
 
-    fetchAndExtractCV(cv.id);
+    if (cvFile) {
+        document.getElementById("cv-download-btn").href = cvFile.webViewLink;
+        fetchAndExtractCV(cvFile.id);
+    }
+
+    if (profileFile) {
+        loadProfilePhoto(profileFile.id);
+    }
 }
 
+
 /* ==========================================================================
-   FETCH & EXTRACT CV PDF TEXT
-=========================================================================== */
+   LOAD PROFILE PHOTO
+   ========================================================================== */
+
+function loadProfilePhoto(fileId) {
+    const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
+
+    const img = document.getElementById("hero-profile-photo");
+    if (img) img.src = url;
+}
+
+
+/* ==========================================================================
+   PDF FETCH + TEXT EXTRACTION
+   ========================================================================== */
 
 async function fetchAndExtractCV(fileId) {
     try {
@@ -88,7 +109,6 @@ async function fetchAndExtractCV(fileId) {
 
         const pdfData = await fetch(url).then(r => r.arrayBuffer());
 
-        // Load PDF.js dynamically
         const pdfjsScript = document.createElement("script");
         pdfjsScript.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
         pdfjsScript.onload = () => extractPDF(pdfData);
@@ -107,92 +127,124 @@ async function extractPDF(buffer) {
     for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
-        fullText += content.items.map(item => item.str).join(" ") + "\n";
+        fullText += content.items.map(a => a.str).join(" ") + "\n";
     }
 
-    parseCVText(fullText);
+    parseCV(fullText);
 }
+
 
 /* ==========================================================================
-   PARSE CV TEXT INTO WEBSITE SECTIONS
-=========================================================================== */
+   PARSE CV TEXT
+   ========================================================================== */
 
-function parseCVText(text) {
-    // Basic keyword-based parsing (improvable if needed)
+function parseCV(text) {
+
     updateAbout(text);
-    updateSkills();
+    updateSkills(text);
     updateExperience(text);
     updateEducation(text);
-    updateLanguages();
-    updateHobbies();
+    updateLanguages(text);
+    updateHobbies(text);
+    updateContactInfo(text);
 }
 
+
+/* ==========================================================================
+   ABOUT SECTION
+   ========================================================================== */
+
 function updateAbout(text) {
-    const about = document.getElementById("about-content");
-    about.innerHTML = `
+    const aboutBox = document.getElementById("about-content");
+
+    aboutBox.innerHTML = `
         <p>
-            Motivated and passionate educator with strong communication skills.
-            Proven ability to mentor learners effectively and deliver academic growth.
+            ${extractSummary(text)}
         </p>
     `;
 
-    const tags = document.getElementById("about-tags");
-    tags.innerHTML = `
-        <div class="about-card glass">Educator</div>
-        <div class="about-card glass">English Instructor</div>
+    document.getElementById("about-tags").innerHTML = `
+        <div class="about-card glass">Graphic Designer</div>
         <div class="about-card glass">Economics Student</div>
-        <div class="about-card glass">Public Speaker</div>
+        <div class="about-card glass">Researcher</div>
+        <div class="about-card glass">Content Creator</div>
     `;
 }
 
-function updateSkills() {
+function extractSummary(text) {
+    const match = text.match(/(Graphic Designer[\s\S]+?)(Skills|Education|Experience)/i);
+    return match ? match[1].trim() : "Passionate and skilled multidisciplinary professional.";
+}
+
+
+/* ==========================================================================
+   SKILLS
+   ========================================================================== */
+
+function updateSkills(text) {
     const skills = [
+        "Graphic Design",
+        "Content Writing",
+        "Research",
+        "Presentation",
+        "Debating",
         "Communication",
-        "Public Speaking",
-        "Complex Problem Solving",
-        "Moderate Graphics Design",
-        "Constructive Teaching",
-        "MS Office Applications"
+        "Software Proficiency"
     ];
 
     const container = document.getElementById("skills-container");
+    container.innerHTML = "";
 
-    skills.forEach(skill => {
-        container.innerHTML += `<div class="skill-card glass">${skill}</div>`;
+    skills.forEach(s => {
+        container.innerHTML += `<div class="skill-card glass">${s}</div>`;
     });
 }
 
-function updateExperience(text) {
-    const container = document.getElementById("experience-container");
 
-    container.innerHTML = `
+/* ==========================================================================
+   EXPERIENCE
+   ========================================================================== */
+
+function updateExperience(text) {
+    const box = document.getElementById("experience-container");
+
+    box.innerHTML = `
         <div class="exp-card glass">
-            <h3>English Instructor — Core Academy, Barishal</h3>
-            <p>June 2023 — August 2023</p>
-            <ul>
-                <li>Boosted writing skills through structured lessons.</li>
-                <li>Adapted teaching for special-education needs.</li>
-                <li>Improved curriculum materials and delivery.</li>
-                <li>Developed custom learning plans.</li>
-            </ul>
+            <h3>Graphic Designer — PPRFSD</h3>
+            <p>2025 — Present</p>
         </div>
 
         <div class="exp-card glass">
-            <h3>Executive Member — Economics Cultural Club</h3>
+            <h3>Associate Member — Economics Study Center</h3>
             <p>2024 — Present</p>
-            <ul>
-                <li>Planned cultural activities & competitions.</li>
-                <li>Helped students showcase talent.</li>
-                <li>Worked with national brands during events.</li>
-            </ul>
+        </div>
+
+        <div class="exp-card glass">
+            <h3>Talent Acquisition Secretary — ECC</h3>
+            <p>2024 — Present</p>
+        </div>
+
+        <div class="exp-card glass">
+            <h3>Organising Associate — ECA</h3>
+            <p>2021 — 2023</p>
+        </div>
+
+        <div class="exp-card glass">
+            <h3>Joint Co-ordinator — ARANYAK</h3>
+            <p>2021 — 2023</p>
         </div>
     `;
 }
 
-function updateEducation(text) {
-    const container = document.getElementById("education-container");
 
-    container.innerHTML = `
+/* ==========================================================================
+   EDUCATION
+   ========================================================================== */
+
+function updateEducation(text) {
+    const box = document.getElementById("education-container");
+
+    box.innerHTML = `
         <div class="edu-card glass">
             <h3>BSS in Economics</h3>
             <p>University of Dhaka</p>
@@ -200,54 +252,80 @@ function updateEducation(text) {
         </div>
 
         <div class="edu-card glass">
-            <h3>HSC — Humanities</h3>
+            <h3>Higher Secondary Certificate</h3>
             <p>Amrita Lal Dey College</p>
             <p>GPA: 5.00 (2022)</p>
         </div>
 
         <div class="edu-card glass">
-            <h3>SSC — Humanities</h3>
-            <p>Shahid Arju Moni Govt. School</p>
+            <h3>Secondary School Certificate</h3>
+            <p>Kaunia Govt. Secondary School</p>
             <p>GPA: 5.00 (2020)</p>
         </div>
     `;
 }
 
+
+/* ==========================================================================
+   LANGUAGES
+   ========================================================================== */
+
 function updateLanguages() {
-    document.getElementById("languages-container").innerHTML += `
+    document.getElementById("languages-container").innerHTML = `
+        <h3>Languages</h3>
         <p>Bangla — Native</p>
         <p>English — Fluent</p>
     `;
 }
 
+
+/* ==========================================================================
+   HOBBIES
+   ========================================================================== */
+
 function updateHobbies() {
-    document.getElementById("hobbies-container").innerHTML += `
-        <p>Debate</p>
-        <p>Poetry</p>
-        <p>Singing</p>
-        <p>Football</p>
-        <p>Research</p>
+    document.getElementById("hobbies-container").innerHTML = `
+        <h3>Hobbies</h3>
+        <p>Debating</p>
+        <p>Presentation</p>
+        <p>Designing</p>
+        <p>Volunteering</p>
+        <p>Content Creation</p>
     `;
 }
 
+
 /* ==========================================================================
-   MY WORKS — Load Subfolders + Files
-=========================================================================== */
+   CONTACT INFO
+   ========================================================================== */
+
+function updateContactInfo(text) {
+    const emailMatch = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
+    const phoneMatch = text.match(/\+?\d[\d\s-]{7,14}\d/);
+
+    document.querySelector(".contact-info").innerHTML = `
+        <p>Email: ${emailMatch || "mail.ashikulislam@gmail.com"}</p>
+        <p>Phone: ${phoneMatch || "+8801753932582"}</p>
+    `;
+}
+
+
+/* ==========================================================================
+   MY WORKS
+   ========================================================================== */
 
 async function loadMyWorks() {
     if (!gapiLoaded) return;
 
-    const query = `'${MY_WORKS_FOLDER_ID}' in parents and mimeType = 'application/vnd.google-apps.folder'`;
-
     const response = await gapi.client.drive.files.list({
-        q: query,
+        q: `'${MY_WORKS_FOLDER_ID}' in parents and mimeType = 'application/vnd.google-apps.folder'`,
         fields: "files(id, name)"
     });
 
-    const folders = response.result.files;
     const container = document.getElementById("works-container");
+    container.innerHTML = "";
 
-    folders.forEach(folder => {
+    response.result.files.forEach(folder => {
         container.innerHTML += `
             <div class="folder-block">
                 <h3 class="folder-title">${folder.name}</h3>
@@ -259,57 +337,53 @@ async function loadMyWorks() {
 }
 
 async function loadFilesInSubfolder(folderId) {
-    const query = `'${folderId}' in parents and mimeType != 'application/vnd.google-apps.folder'`;
-
     const response = await gapi.client.drive.files.list({
-        q: query,
+        q: `'${folderId}' in parents`,
         fields: "files(id, name, thumbnailLink, webViewLink)"
     });
 
-    const files = response.result.files;
     const container = document.getElementById(`folder-${folderId}`);
 
-    files.forEach(file => {
+    response.result.files.forEach(file => {
         container.appendChild(createPreviewCard(file));
     });
 }
 
+
 /* ==========================================================================
-   CONTENTS (VIDEO ONLY)
-=========================================================================== */
+   CONTENTS VIDEOS
+   ========================================================================== */
 
 async function loadContentsVideos() {
-    const query = `'${CONTENTS_FOLDER_ID}' in parents and mimeType contains 'video/'`;
-
     const response = await gapi.client.drive.files.list({
-        q: query,
+        q: `'${CONTENTS_FOLDER_ID}' in parents and mimeType contains 'video/'`,
         fields: "files(id, name, thumbnailLink, webViewLink)"
     });
 
-    const videos = response.result.files;
     const container = document.getElementById("contents-video-container");
 
-    videos.forEach(video => {
+    response.result.files.forEach(video => {
         container.appendChild(createPreviewCard(video));
     });
 }
 
+
 /* ==========================================================================
-   PREVIEW CARD GENERATOR
-=========================================================================== */
+   PREVIEW CARD BUILDER
+   ========================================================================== */
 
 function createPreviewCard(file) {
     const card = document.createElement("div");
     card.className = "preview-card";
 
-    const thumb = document.createElement("img");
-    thumb.src = file.thumbnailLink || "default-preview.png";
+    const img = document.createElement("img");
+    img.src = file.thumbnailLink || "default-preview.png";
 
     const label = document.createElement("div");
     label.className = "preview-label";
     label.innerText = file.name;
 
-    card.appendChild(thumb);
+    card.appendChild(img);
     card.appendChild(label);
 
     card.onclick = () => window.open(file.webViewLink, "_blank");
@@ -317,9 +391,10 @@ function createPreviewCard(file) {
     return card;
 }
 
+
 /* ==========================================================================
-   CUSTOM CURSOR
-=========================================================================== */
+   CURSOR + EFFECTS
+   ========================================================================== */
 
 function initCursor() {
     const c = document.getElementById("cursor");
@@ -334,9 +409,10 @@ function initCursor() {
     });
 }
 
+
 /* ==========================================================================
    SCROLL REVEAL
-=========================================================================== */
+   ========================================================================== */
 
 function initScrollReveal() {
     const elements = document.querySelectorAll(".reveal");
@@ -353,9 +429,10 @@ function initScrollReveal() {
     reveal();
 }
 
+
 /* ==========================================================================
-   PARALLAX EFFECT
-=========================================================================== */
+   PARALLAX
+   ========================================================================== */
 
 function initParallax() {
     const content = document.querySelector(".hero-content");
@@ -367,9 +444,10 @@ function initParallax() {
     });
 }
 
+
 /* ==========================================================================
-   PARTICLE BACKGROUND
-=========================================================================== */
+   PARTICLES ANIMATION
+   ========================================================================== */
 
 function startParticles() {
     const canvas = document.getElementById("particle-canvas");
@@ -380,13 +458,13 @@ function startParticles() {
 
     const particles = [];
 
-    for (let i = 0; i < 95; i++) {
+    for (let i = 0; i < 90; i++) {
         particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            radius: Math.random() * 3,
-            speedX: (Math.random() - 0.5) * 0.8,
-            speedY: (Math.random() - 0.5) * 0.8
+            radius: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 0.6,
+            speedY: (Math.random() - 0.5) * 0.6
         });
     }
 
@@ -398,8 +476,10 @@ function startParticles() {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
             ctx.fill();
+
             p.x += p.speedX;
             p.y += p.speedY;
+
             if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
             if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
         });
@@ -410,9 +490,10 @@ function startParticles() {
     animate();
 }
 
+
 /* ==========================================================================
-   HELPER: Fade Out Loader
-=========================================================================== */
+   LOADER
+   ========================================================================== */
 
 function fadeOutLoader() {
     const loader = document.getElementById("loading-screen");
@@ -420,11 +501,11 @@ function fadeOutLoader() {
     setTimeout(() => loader.style.display = "none", 600);
 }
 
+
 /* ==========================================================================
    SCROLL TO SECTION
-=========================================================================== */
+   ========================================================================== */
 
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
-
