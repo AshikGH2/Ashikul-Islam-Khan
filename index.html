@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ashikul Islam Khan — Portfolio</title>
 
-    <link rel="stylesheet" href="style.css" />
+    <!-- Force GitHub Pages to load the newest CSS -->
+    <link rel="stylesheet" href="style.css?v=2" />
 </head>
 
 <body>
@@ -23,6 +25,7 @@
     <!-- HERO SECTION -->
     <header class="hero" id="hero">
         <canvas id="particle-canvas"></canvas>
+
         <div class="hero-content">
             <h1 class="hero-title">Ashikul Islam Khan</h1>
             <p class="hero-tagline">Department of Economics — University of Dhaka</p>
@@ -36,6 +39,7 @@
                 </button>
             </div>
 
+            <!-- Latest CV updates dynamically -->
             <a id="cv-download-btn" class="cv-download-btn" target="_blank">
                 Download Latest CV
             </a>
@@ -48,12 +52,11 @@
         <h2 class="section-title">About Me</h2>
 
         <div id="about-content" class="bio glass">
-            <!-- Dynamic CV Summary will be inserted here by JS -->
             <p>Loading profile summary...</p>
         </div>
 
         <div class="about-grid" id="about-tags">
-            <!-- Dynamic tags / quick highlights from CV -->
+            <!-- Filled dynamically -->
         </div>
     </section>
 
@@ -62,9 +65,7 @@
     <section id="skills" class="section reveal">
         <h2 class="section-title">Skills</h2>
 
-        <div class="skills-grid" id="skills-container">
-            <!-- Dynamic skills from CV -->
-        </div>
+        <div class="skills-grid" id="skills-container"></div>
     </section>
 
 
@@ -72,9 +73,7 @@
     <section id="experience" class="section reveal">
         <h2 class="section-title">Experience</h2>
 
-        <div class="experience-list" id="experience-container">
-            <!-- Inserted dynamically from CV -->
-        </div>
+        <div class="experience-list" id="experience-container"></div>
     </section>
 
 
@@ -82,9 +81,7 @@
     <section id="education" class="section reveal">
         <h2 class="section-title">Education</h2>
 
-        <div class="education-list" id="education-container">
-            <!-- Loaded dynamically -->
-        </div>
+        <div class="education-list" id="education-container"></div>
     </section>
 
 
@@ -96,36 +93,29 @@
 
             <div class="extra-card glass" id="languages-container">
                 <h3>Languages</h3>
-                <!-- dynamic -->
             </div>
 
             <div class="extra-card glass" id="hobbies-container">
                 <h3>Hobbies</h3>
-                <!-- dynamic -->
             </div>
 
         </div>
     </section>
 
 
-    <!-- MY WORKS SECTION (DYNAMIC GOOGLE DRIVE) -->
+    <!-- MY WORKS (Dynamic Google Drive Preview Cards) -->
     <section id="my-works" class="section reveal">
         <h2 class="section-title">My Works</h2>
 
-        <div id="works-container">
-            <!-- Subfolders and files will load dynamically -->
-        </div>
-
+        <div id="works-container"></div>
     </section>
 
 
-    <!-- CONTENTS SECTION (VIDEOS ONLY) -->
+    <!-- CONTENTS SECTION (Videos Only) -->
     <section id="contents" class="section reveal">
         <h2 class="section-title">Contents</h2>
 
-        <div class="scroll-container" id="contents-video-container">
-            <!-- Video preview cards load here dynamically -->
-        </div>
+        <div class="scroll-container" id="contents-video-container"></div>
     </section>
 
 
@@ -153,8 +143,8 @@
         <button id="back-to-top" onclick="scrollToSection('hero')">▲</button>
     </footer>
 
-
-    <script src="script.js"></script>
+    <!-- Force GitHub Pages to load newest JS -->
+    <script src="script.js?v=2"></script>
 
 </body>
 </html>
