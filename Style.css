@@ -1,0 +1,444 @@
+/* ===========================================
+   GLOBAL VARIABLES & RESET
+=========================================== */
+
+:root {
+    --text: rgb(255, 255, 255);
+    --accent: rgb(68, 149, 229);
+    --background: rgb(5, 28, 50);
+
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-blur: blur(14px);
+
+    --transition-fast: 0.25s ease;
+    --transition-medium: 0.45s ease;
+    --transition-slow: 0.75s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+    font-family: "Poppins", sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* ===========================================
+   CUSTOM CURSOR
+=========================================== */
+
+#cursor, #cursor-follower {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 50%;
+}
+
+#cursor {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    transition: transform 0.05s;
+}
+
+#cursor-follower {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--accent);
+    opacity: 0.7;
+    transition: top 0.1s ease-out, left 0.1s ease-out;
+}
+
+/* ===========================================
+   LOADING SCREEN
+=========================================== */
+
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10000;
+}
+
+.loader {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#loading-screen p {
+    margin-top: 12px;
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
+
+/* ===========================================
+   HERO SECTION + PARALLAX + PARTICLES
+=========================================== */
+
+.hero {
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+#particle-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform var(--transition-medium);
+}
+
+.hero-title {
+    font-size: 3.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: upfade 1.2s ease forwards;
+}
+
+.hero-tagline {
+    opacity: 0;
+    animation: fadeIn 1.4s ease forwards 0.3s;
+}
+
+.hero-buttons {
+    margin-top: 25px;
+    opacity: 0;
+    animation: fadeIn 1.5s ease forwards 0.5s;
+}
+
+.cv-download-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    border-radius: 10px;
+    background: var(--glass-bg);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    backdrop-filter: blur(12px);
+    transition: var(--transition-fast);
+    text-decoration: none;
+}
+
+.cv-download-btn:hover {
+    background: var(--accent);
+    color: var(--text);
+    box-shadow: 0 0 15px rgba(68,149,229,0.6);
+}
+
+@keyframes upfade {
+    0% { transform: translateY(30px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ===========================================
+   BUTTONS
+=========================================== */
+
+.primary-btn, .secondary-btn {
+    padding: 14px 30px;
+    font-size: 1.05rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin: 8px;
+}
+
+.primary-btn {
+    background: var(--accent);
+    color: var(--text);
+    border: none;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+}
+
+.primary-btn:hover, .secondary-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(68,149,229,0.4);
+}
+
+/* ===========================================
+   GLASSMORPHISM PANELS
+=========================================== */
+
+.glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+/* ===========================================
+   SECTION GENERAL
+=========================================== */
+
+.section {
+    padding: 100px 40px;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.section-title::after {
+    content: "";
+    width: 80px;
+    height: 3px;
+    background: var(--accent);
+    display: block;
+    margin: 12px auto 0 auto;
+}
+
+/* ===========================================
+   ABOUT SECTION
+=========================================== */
+
+.bio {
+    max-width: 850px;
+    margin: auto;
+    line-height: 1.7;
+}
+
+.about-grid {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.about-card {
+    padding: 20px 35px;
+    transition: var(--transition-fast);
+}
+
+.about-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(68,149,229,0.25);
+}
+
+/* ===========================================
+   SKILLS GRID
+=========================================== */
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 25px;
+}
+
+.skill-card {
+    padding: 25px;
+    transition: var(--transition-fast);
+}
+
+.skill-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(68,149,229,0.3);
+}
+
+/* ===========================================
+   EXPERIENCE SECTION
+=========================================== */
+
+.experience-list {
+    display: grid;
+    gap: 25px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.exp-card {
+    padding: 30px;
+    text-align: left;
+    transition: var(--transition-fast);
+}
+
+.exp-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ===========================================
+   EDUCATION
+=========================================== */
+
+.education-list {
+    display: grid;
+    gap: 25px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.edu-card {
+    padding: 25px;
+}
+
+/* ===========================================
+   LANGUAGE & HOBBIES
+=========================================== */
+
+.extras-grid {
+    display: flex;
+    justify-content: center;
+    gap: 45px;
+}
+
+.extra-card {
+    padding: 20px 35px;
+}
+
+/* ===========================================
+   MY WORKS / GOOGLE DRIVE PREVIEW CARDS
+=========================================== */
+
+.folder-block {
+    margin-bottom: 45px;
+}
+
+.folder-title {
+    font-size: 1.6rem;
+    margin-bottom: 18px;
+}
+
+.scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 15px;
+}
+
+.preview-card {
+    min-width: 260px;
+    height: 195px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.preview-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(68,149,229,0.35);
+}
+
+.preview-label {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    font-size: 0.9rem;
+}
+
+/* ===========================================
+   CONTACT SECTION
+=========================================== */
+
+.contact-form {
+    max-width: 500px;
+    margin: auto;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    color: var(--text);
+}
+
+/* ===========================================
+   FOOTER
+=========================================== */
+
+footer {
+    padding: 30px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+#back-to-top {
+    margin-top: 10px;
+    background: var(--accent);
+    color: var(--text);
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+}
+
+/* ===========================================
+   SCROLL REVEAL
+=========================================== */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: 0.8s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+=========================================== */
+
+@media (max-width: 800px) {
+    .hero-title { font-size: 2.6rem; }
+    .extras-grid { flex-direction: column; gap: 25px; }
+    .about-grid { flex-direction: column; }
+}

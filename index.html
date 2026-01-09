@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ashikul Islam Khan — Portfolio</title>
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <p>Loading your experience...</p>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <!-- HERO SECTION -->
+    <header class="hero" id="hero">
+        <canvas id="particle-canvas"></canvas>
+        <div class="hero-content">
+            <h1 class="hero-title">Ashikul Islam Khan</h1>
+            <p class="hero-tagline">Department of Economics — University of Dhaka</p>
+
+            <div class="hero-buttons">
+                <button class="primary-btn" onclick="scrollToSection('contact')">
+                    Contact Me
+                </button>
+                <button class="secondary-btn" onclick="scrollToSection('my-works')">
+                    View Projects
+                </button>
+            </div>
+
+            <a id="cv-download-btn" class="cv-download-btn" target="_blank">
+                Download Latest CV
+            </a>
+        </div>
+    </header>
+
+
+    <!-- ABOUT SECTION -->
+    <section id="about" class="section reveal">
+        <h2 class="section-title">About Me</h2>
+
+        <div id="about-content" class="bio glass">
+            <!-- Dynamic CV Summary will be inserted here by JS -->
+            <p>Loading profile summary...</p>
+        </div>
+
+        <div class="about-grid" id="about-tags">
+            <!-- Dynamic tags / quick highlights from CV -->
+        </div>
+    </section>
+
+
+    <!-- SKILLS SECTION -->
+    <section id="skills" class="section reveal">
+        <h2 class="section-title">Skills</h2>
+
+        <div class="skills-grid" id="skills-container">
+            <!-- Dynamic skills from CV -->
+        </div>
+    </section>
+
+
+    <!-- EXPERIENCE SECTION -->
+    <section id="experience" class="section reveal">
+        <h2 class="section-title">Experience</h2>
+
+        <div class="experience-list" id="experience-container">
+            <!-- Inserted dynamically from CV -->
+        </div>
+    </section>
+
+
+    <!-- EDUCATION SECTION -->
+    <section id="education" class="section reveal">
+        <h2 class="section-title">Education</h2>
+
+        <div class="education-list" id="education-container">
+            <!-- Loaded dynamically -->
+        </div>
+    </section>
+
+
+    <!-- LANGUAGES & HOBBIES SECTION -->
+    <section id="extras" class="section reveal">
+        <h2 class="section-title">More About Me</h2>
+
+        <div class="extras-grid">
+
+            <div class="extra-card glass" id="languages-container">
+                <h3>Languages</h3>
+                <!-- dynamic -->
+            </div>
+
+            <div class="extra-card glass" id="hobbies-container">
+                <h3>Hobbies</h3>
+                <!-- dynamic -->
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- MY WORKS SECTION (DYNAMIC GOOGLE DRIVE) -->
+    <section id="my-works" class="section reveal">
+        <h2 class="section-title">My Works</h2>
+
+        <div id="works-container">
+            <!-- Subfolders and files will load dynamically -->
+        </div>
+
+    </section>
+
+
+    <!-- CONTENTS SECTION (VIDEOS ONLY) -->
+    <section id="contents" class="section reveal">
+        <h2 class="section-title">Contents</h2>
+
+        <div class="scroll-container" id="contents-video-container">
+            <!-- Video preview cards load here dynamically -->
+        </div>
+    </section>
+
+
+    <!-- CONTACT SECTION -->
+    <section id="contact" class="section reveal">
+        <h2 class="section-title">Contact</h2>
+
+        <form class="contact-form glass">
+            <input type="text" placeholder="Your Name" />
+            <input type="email" placeholder="Your Email" />
+            <textarea placeholder="Your Message"></textarea>
+            <button type="submit" class="primary-btn">Send Message</button>
+        </form>
+
+        <div class="contact-info">
+            <p>Email: mail.ashikulislam@gmail.com</p>
+            <p>Phone: +8801753 932582</p>
+        </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 Ashikul Islam Khan. All Rights Reserved.</p>
+        <button id="back-to-top" onclick="scrollToSection('hero')">▲</button>
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
