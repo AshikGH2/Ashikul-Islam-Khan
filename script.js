@@ -1,17 +1,16 @@
 /* ==========================================================================
-   GOOGLE DRIVE API CONFIG (PLACEHOLDERS)
+   GOOGLE DRIVE API CONFIG
 =========================================================================== */
 
-const API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E
-";
-const CLIENT_ID = "933969038608-s5kuf61bdlbp49jf729fppjiabel9sce.apps.googleusercontent.com
-";
+const API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E";
+const CLIENT_ID = "933969038608-s5kuf61bdlbp49jf729fppjiabel9sce.apps.googleusercontent.com";
 
 const MY_WORKS_FOLDER_ID = "1_H5wCZbyc8LMhcmb2wK3MkIBdf4hrjEd";
 const CONTENTS_FOLDER_ID = "1ioaYVdHLgGObZvDz2RtkyK8DpvSHTXMI";
 const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
 
 let gapiLoaded = false;
+
 
 /* ==========================================================================
    INITIAL LOAD
@@ -428,3 +427,4 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
