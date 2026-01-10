@@ -419,30 +419,39 @@ body {
 
 
 /* ===========================================
-   CONTACT BRICKS
+   CONTACT TILES (Unified for brick + tile)
 =========================================== */
 
 .contact-links-grid {
-    margin-top: 30px;
+    margin-top: 40px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 18px;
-    max-width: 900px;
+    gap: 25px;
+    max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.contact-brick {
+/* Both classes share same style */
+.contact-brick,
+.contact-tile {
+    padding: 20px;
     text-align: center;
-    padding: 16px;
-    font-size: 1.05rem;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     transition: var(--transition-fast);
+
+    /* Glassmorphism identical to skills tiles */
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+
+    font-size: 1rem;
 }
 
-.contact-brick:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 28px rgba(68,149,229,0.35);
-    background: rgba(68,149,229,0.25);
+.contact-brick:hover,
+.contact-tile:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(68,149,229,0.25);
 }
+
