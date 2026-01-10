@@ -25,6 +25,7 @@
         <canvas id="particle-canvas"></canvas>
 
         <div class="hero-content">
+
             <div class="hero-photo-frame">
                 <img id="profile-photo" src="" alt="Profile Photo" />
             </div>
@@ -37,16 +38,20 @@
                 <button class="secondary-btn" onclick="scrollToSection('my-works')">View Projects</button>
             </div>
 
-            <a id="cv-download-btn" class="cv-download-btn" target="_blank">Curriculum Vitae</a>
+            <a id="cv-download-btn" class="cv-download-btn" target="_blank">
+                Curriculum Vitae
+            </a>
         </div>
     </header>
 
     <!-- ABOUT SECTION -->
     <section id="about" class="section reveal">
         <h2 class="section-title">About Me</h2>
+
         <div id="about-content" class="bio glass">
             <p>Loading profile summary...</p>
         </div>
+
         <div class="about-grid" id="about-tags"></div>
     </section>
 
@@ -68,11 +73,12 @@
         <div class="education-list" id="education-container"></div>
     </section>
 
-    <!-- EXTRAS -->
+    <!-- LANGUAGES & HOBBIES -->
     <section id="extras" class="section reveal">
         <h2 class="section-title">More About Me</h2>
 
         <div class="extras-grid">
+
             <div class="extra-card glass" id="languages-container">
                 <h3>Languages</h3>
             </div>
@@ -80,26 +86,29 @@
             <div class="extra-card glass" id="hobbies-container">
                 <h3>Hobbies</h3>
             </div>
+
         </div>
     </section>
 
-    <!-- MY WORKS -->
+    <!-- MY WORKS SECTION -->
     <section id="my-works" class="section reveal">
         <h2 class="section-title">My Works</h2>
+
         <div id="works-container"></div>
     </section>
 
-    <!-- CONTENTS -->
+    <!-- CONTENTS SECTION -->
     <section id="contents" class="section reveal">
         <h2 class="section-title">Contents</h2>
         <div class="scroll-container" id="contents-video-container"></div>
     </section>
 
-    <!-- CONTACT -->
+    <!-- CONTACT SECTION -->
     <section id="contact" class="section reveal">
         <h2 class="section-title">Contact</h2>
 
         <div class="contact-links-grid">
+
             <div class="contact-tile glass" onclick="window.open('tel:+8801753932582', '_blank')">Phone</div>
             <div class="contact-tile glass" onclick="window.open('mailto:mail.ashikulislam@gmail.com', '_blank')">Email</div>
             <div class="contact-tile glass" onclick="window.open('https://www.linkedin.com/in/ashikplays19', '_blank')">LinkedIn</div>
@@ -107,14 +116,18 @@
             <div class="contact-tile glass" onclick="window.open('https://www.facebook.com/AshikKhan.fb', '_blank')">Facebook</div>
             <div class="contact-tile glass" onclick="window.open('https://www.instagram.com/ashikplays19', '_blank')">Instagram</div>
             <div class="contact-tile glass" onclick="window.open('https://www.x.com/AshikPlays19', '_blank')">Twitter</div>
+
         </div>
+
     </section>
 
+    <!-- FOOTER -->
     <footer>
         <p>© 2026 Ashikul Islam Khan. All Rights Reserved.</p>
         <button id="back-to-top" onclick="scrollToSection('hero')">▲</button>
     </footer>
 
     <script src="script.js"></script>
+
 </body>
 </html>
