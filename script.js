@@ -1,6 +1,6 @@
 /* ==========================================================================  
    GOOGLE DRIVE API CONFIG  
-   ========================================================================== */
+========================================================================== */
 
 const API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E";
 const CLIENT_ID = "933969038608-s5kuf61bdlbp49jf729fppjiabel9sce.apps.googleusercontent.com";
@@ -11,12 +11,15 @@ const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
 
 let gapiLoaded = false;
 
-/* FIX: Add fadeOutLoader back */
+/* LOADING SCREEN FADE OUT */
 function fadeOutLoader() {
     const loader = document.getElementById("loading-screen");
     if (!loader) return;
+
     loader.style.opacity = "0";
-    setTimeout(() => loader.style.display = "none", 600);
+    setTimeout(() => {
+        loader.style.display = "none";
+    }, 600);
 }
 
 window.addEventListener("load", () => {
@@ -24,7 +27,7 @@ window.addEventListener("load", () => {
     loadDriveAPI();
 });
 
-/* Load Google Drive API */
+/* LOAD GOOGLE DRIVE */
 function loadDriveAPI() {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
@@ -50,6 +53,7 @@ async function initDrive() {
     }
 }
 
+/* LOAD CV + PROFILE IMAGE */
 async function loadCVAndProfile() {
     const files = await gapi.client.drive.files.list({
         q: `'${CV_FOLDER_ID}' in parents`,
@@ -68,7 +72,6 @@ async function loadCVAndProfile() {
 
     if (cvFile) {
         document.getElementById("cv-download-btn").href = cvFile.webViewLink;
-        fetchAndExtractCV(cvFile.id);
     }
 
     if (profileFile) {
@@ -77,57 +80,16 @@ async function loadCVAndProfile() {
 }
 
 function loadProfilePhoto(fileId) {
-    const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
+    const url =
+        `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
+
     const img = document.getElementById("profile-photo");
     if (img) img.src = url;
 }
 
-async function fetchAndExtractCV(fileId) {
-    try {
-        const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
-        const pdfData = await fetch(url).then(r => r.arrayBuffer());
-
-        const pdfScript = document.createElement("script");
-        pdfScript.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
-        pdfScript.onload = () => extractPDF(pdfData);
-        document.body.appendChild(pdfScript);
-
-    } catch (err) {
-        console.error("PDF extraction failed:", err);
-    }
-}
-
-async function extractPDF(buffer) {
-    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
-
-    let fullText = "";
-
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        fullText += content.items.map(a => a.str).join(" ") + "\n";
-    }
-
-    parseCV(fullText);
-}
-
-function parseCV(text) {
-    updateAbout(text);
-    updateSkills(text);
-
-    // Disable others until you rewrite them
-    // updateExperience(text);
-    // updateEducation(text);
-    // updateLanguages(text);
-    // updateHobbies(text);
-    // updateContactInfo(text);
-}
-
-/* ABOUT SECTION – FIX #1: accept text */
-function updateAbout(text) {
-    const aboutBox = document.getElementById("about-content");
-
-    aboutBox.innerHTML = `
+/* UPDATE ABOUT SECTION */
+function updateAbout() {
+    document.getElementById("about-content").innerHTML = `
         <p>~ The greatest rewards demand the highest sacrifice.</p>
     `;
 
@@ -139,8 +101,8 @@ function updateAbout(text) {
     `;
 }
 
-/* SKILLS SECTION – FIX #1: accept text */
-function updateSkills(text) {
+/* UPDATE SKILLS */
+function updateSkills() {
     const skills = [
         "Mediocre Graphic Designing",
         "Mediocre Video Editing",
@@ -158,3 +120,16 @@ function updateSkills(text) {
         container.innerHTML += `<div class="skill-card">${s}</div>`;
     });
 }
+
+/* PLACEHOLDER LOADERS */
+function loadMyWorks() {
+    document.getElementById("works-container").innerHTML = "";
+}
+
+function loadContentsVideos() {
+    document.getElementById("contents-video-container").innerHTML = "";
+}
+
+/* INITIALIZE STATIC SECTIONS */
+updateAbout();
+updateSkills();
