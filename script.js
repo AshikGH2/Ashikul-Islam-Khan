@@ -167,7 +167,7 @@ function updateAbout(text) {
     document.getElementById("about-tags").innerHTML = `
         <div class="about-card glass">Graphic Designer</div>
         <div class="about-card glass">Economics Student</div>
-        <div class="about-card glass">Researcher</div>
+        <div class="about-card glass">Aspiring Researcher</div>
         <div class="about-card glass">Content Creator</div>
     `;
 }
@@ -211,10 +211,9 @@ function updateExperience(text) {
 
     box.innerHTML = `
         <div class="exp-card glass">
-            <h3>Graphic Designer — PPRFSD</h3>
+            <h3>Graphic Designer — PPSRF</h3>
             <p>2025 — Present</p>
         </div>
-
         <div class="exp-card glass">
             <h3>Associate Member — Economics Study Center</h3>
             <p>2024 — Present</p>
@@ -510,4 +509,5 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
 
