@@ -253,13 +253,13 @@ function updateEducation(text) {
         <div class="edu-card glass">
             <h3>Higher Secondary Certificate</h3>
             <p>Amrita Lal Dey College</p>
-            <p>GPA: 5.00 (2022)</p>
+            
         </div>
 
         <div class="edu-card glass">
             <h3>Secondary School Certificate</h3>
             <p>Kaunia Govt. Secondary School</p>
-            <p>GPA: 5.00 (2020)</p>
+            
         </div>
     `;
 }
@@ -508,6 +508,7 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
 
 
 
