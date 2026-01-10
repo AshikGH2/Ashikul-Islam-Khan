@@ -92,15 +92,7 @@ body {
     overflow: hidden;
 }
 
-#particle-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-}
-
-/* PROFILE PHOTO FRAME */
-
+/* Profile photo frame preserved */
 .hero-photo-frame {
     width: 160px;
     height: 160px;
@@ -121,116 +113,6 @@ body {
     object-fit: cover;
 }
 
-@keyframes photoFade {
-    from {
-        opacity: 0;
-        transform: translateY(25px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: transform var(--transition-medium);
-}
-
-.hero-title {
-    font-size: 3.8rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    opacity: 0;
-    animation: upfade 1.2s ease forwards;
-}
-
-.hero-tagline {
-    opacity: 0;
-    animation: fadeIn 1.4s ease forwards 0.3s;
-}
-
-.hero-buttons {
-    margin-top: 25px;
-    opacity: 0;
-    animation: fadeIn 1.5s ease forwards 0.5s;
-}
-
-.cv-download-btn {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 30px;
-    border-radius: 10px;
-    background: var(--glass-bg);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    backdrop-filter: blur(12px);
-    transition: var(--transition-fast);
-    text-decoration: none;
-}
-
-.cv-download-btn:hover {
-    background: var(--accent);
-    color: var(--text);
-    box-shadow: 0 0 15px rgba(68,149,229,0.6);
-}
-
-@keyframes upfade {
-    0% { transform: translateY(30px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* ===========================================
-   BUTTONS
-=========================================== */
-
-.primary-btn, .secondary-btn {
-    padding: 14px 30px;
-    font-size: 1.05rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    margin: 8px;
-}
-
-.primary-btn {
-    background: var(--accent);
-    color: var(--text);
-    border: none;
-}
-
-.secondary-btn {
-    background: transparent;
-    border: 2px solid var(--accent);
-    color: var(--accent);
-}
-
-.primary-btn:hover, .secondary-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(68,149,229,0.4);
-}
-
-/* ===========================================
-   GLASSMORPHISM PANELS
-=========================================== */
-
-.glass {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: var(--glass-blur);
-    border-radius: 14px;
-    padding: 22px;
-}
-
 /* ===========================================
    SECTION GENERAL
 =========================================== */
@@ -240,41 +122,26 @@ body {
     text-align: center;
 }
 
-.section-title {
-    font-size: 2.2rem;
-    margin-bottom: 25px;
-    position: relative;
-}
-
-.section-title::after {
-    content: "";
-    width: 80px;
-    height: 3px;
-    background: var(--accent);
-    display: block;
-    margin: 12px auto 0 auto;
-}
-
 /* ===========================================
-   ABOUT SECTION
+   ABOUT SECTION (Scrollable Tags)
 =========================================== */
-
-.bio {
-    max-width: 850px;
-    margin: auto;
-    line-height: 1.7;
-}
 
 .about-grid {
     display: flex;
-    justify-content: center;
-    gap: 25px;
-    margin-top: 30px;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
 }
 
 .about-card {
-    padding: 20px 35px;
+    min-width: 180px;
+    padding: 18px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 12px;
     transition: var(--transition-fast);
+    text-align: center;
 }
 
 .about-card:hover {
@@ -283,143 +150,34 @@ body {
 }
 
 /* ===========================================
-   SKILLS GRID
+   SKILLS SECTION (Scrollable + Same Size)
 =========================================== */
 
 .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 25px;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
 }
 
 .skill-card {
-    padding: 25px;
+    min-width: 180px;
+    padding: 18px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 12px;
     transition: var(--transition-fast);
+    text-align: center;
 }
 
 .skill-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 28px rgba(68,149,229,0.3);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(68,149,229,0.25);
 }
 
 /* ===========================================
-   EXPERIENCE SECTION
-=========================================== */
-
-.experience-list {
-    display: grid;
-    gap: 25px;
-    max-width: 900px;
-    margin: auto;
-}
-
-.exp-card {
-    padding: 30px;
-    text-align: left;
-    transition: var(--transition-fast);
-}
-
-.exp-card:hover {
-    transform: translateY(-5px);
-}
-
-/* ===========================================
-   EDUCATION
-=========================================== */
-
-.education-list {
-    display: grid;
-    gap: 25px;
-    max-width: 900px;
-    margin: auto;
-}
-
-.edu-card {
-    padding: 25px;
-}
-
-/* ===========================================
-   LANGUAGE & HOBBIES
-=========================================== */
-
-.extras-grid {
-    display: flex;
-    justify-content: center;
-    gap: 45px;
-}
-
-.extra-card {
-    padding: 20px 35px;
-}
-
-/* ===========================================
-   DRIVE PREVIEW CARDS
-=========================================== */
-
-.folder-block {
-    margin-bottom: 45px;
-}
-
-.folder-title {
-    font-size: 1.6rem;
-    margin-bottom: 18px;
-}
-
-.scroll-container {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding-bottom: 15px;
-}
-
-.preview-card {
-    min-width: 260px;
-    height: 195px;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.preview-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.preview-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 24px rgba(68,149,229,0.35);
-}
-
-.preview-label {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 10px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    font-size: 0.9rem;
-    color: rgb(68,150,230); /* ✔ fix applied */
-}
-
-}
-
-/* ===========================================
-   RESPONSIVE DESIGN
-=========================================== */
-
-@media (max-width: 800px) {
-    .hero-title { font-size: 2.6rem; }
-    .hero-photo-frame { width: 130px; height: 130px; }
-    .about-grid { flex-direction: column; }
-    .extras-grid { flex-direction: column; gap: 25px; }
-}
-
-
-/* ===========================================
-   CONTACT TILES (Unified for brick + tile)
+   CONTACT TILES (Unified)
 =========================================== */
 
 .contact-links-grid {
@@ -432,7 +190,6 @@ body {
     margin-right: auto;
 }
 
-/* Both classes share same style */
 .contact-brick,
 .contact-tile {
     padding: 20px;
@@ -440,13 +197,9 @@ body {
     border-radius: 12px;
     cursor: pointer;
     transition: var(--transition-fast);
-
-    /* Glassmorphism identical to skills tiles */
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     backdrop-filter: var(--glass-blur);
-
-    font-size: 1rem;
 }
 
 .contact-brick:hover,
@@ -455,3 +208,25 @@ body {
     box-shadow: 0 15px 30px rgba(68,149,229,0.25);
 }
 
+/* ===========================================
+   DRIVE PREVIEW CARDS
+=========================================== */
+
+.preview-card {
+    min-width: 260px;
+    height: 195px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ===========================================
+   RESPONSIVE
+=========================================== */
+
+@media (max-width: 800px) {
+    .about-grid,
+    .skills-grid {
+        gap: 15px;
+    }
+}
