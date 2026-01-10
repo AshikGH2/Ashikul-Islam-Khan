@@ -1,6 +1,7 @@
 /* ===========================================
-   GLOBAL VARIABLES
+   GLOBAL VARIABLES & RESET
 =========================================== */
+
 :root {
     --text: rgb(255, 255, 255);
     --accent: rgb(68, 149, 229);
@@ -12,9 +13,9 @@
 
     --transition-fast: 0.25s ease;
     --transition-medium: 0.45s ease;
+    --transition-slow: 0.75s ease;
 }
 
-/* RESET */
 * {
     margin: 0;
     padding: 0;
@@ -30,18 +31,44 @@ body {
 }
 
 /* ===========================================
+   CUSTOM CURSOR
+=========================================== */
+
+#cursor, #cursor-follower {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 50%;
+}
+
+#cursor {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    transition: transform 0.05s;
+}
+
+#cursor-follower {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--accent);
+    opacity: 0.7;
+    transition: top 0.1s ease-out, left 0.1s ease-out;
+}
+
+/* ===========================================
    LOADING SCREEN
 =========================================== */
+
 #loading-screen {
     position: fixed;
     inset: 0;
     background: var(--background);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-    transition: opacity 0.6s ease;
+    flex-direction: column;
+    z-index: 10000;
 }
 
 .loader {
@@ -56,7 +83,7 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===========================================
-   HERO SECTION
+   HERO SECTION + PARALLAX + PARTICLES
 =========================================== */
 
 .hero {
@@ -64,6 +91,15 @@ body {
     position: relative;
     overflow: hidden;
 }
+
+#particle-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* PROFILE PHOTO FRAME */
 
 .hero-photo-frame {
     width: 160px;
@@ -74,6 +110,9 @@ body {
     border: 3px solid var(--accent);
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(68,149,229,0.4);
+    opacity: 0;
+    animation: photoFade 1.2s ease forwards;
 }
 
 .hero-photo-frame img {
@@ -82,59 +121,307 @@ body {
     object-fit: cover;
 }
 
+@keyframes photoFade {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform var(--transition-medium);
+}
+
+.hero-title {
+    font-size: 3.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: upfade 1.2s ease forwards;
+}
+
+.hero-tagline {
+    opacity: 0;
+    animation: fadeIn 1.4s ease forwards 0.3s;
+}
+
+.hero-buttons {
+    margin-top: 25px;
+    opacity: 0;
+    animation: fadeIn 1.5s ease forwards 0.5s;
+}
+
+.cv-download-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    border-radius: 10px;
+    background: var(--glass-bg);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    backdrop-filter: blur(12px);
+    transition: var(--transition-fast);
+    text-decoration: none;
+}
+
+.cv-download-btn:hover {
+    background: var(--accent);
+    color: var(--text);
+    box-shadow: 0 0 15px rgba(68,149,229,0.6);
+}
+
+@keyframes upfade {
+    0% { transform: translateY(30px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* ===========================================
-   SECTIONS
+   BUTTONS
 =========================================== */
+
+.primary-btn, .secondary-btn {
+    padding: 14px 30px;
+    font-size: 1.05rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin: 8px;
+}
+
+.primary-btn {
+    background: var(--accent);
+    color: var(--text);
+    border: none;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+}
+
+.primary-btn:hover, .secondary-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(68,149,229,0.4);
+}
+
+/* ===========================================
+   GLASSMORPHISM PANELS
+=========================================== */
+
+.glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+/* ===========================================
+   SECTION GENERAL
+=========================================== */
+
 .section {
     padding: 100px 40px;
     text-align: center;
 }
 
+.section-title {
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.section-title::after {
+    content: "";
+    width: 80px;
+    height: 3px;
+    background: var(--accent);
+    display: block;
+    margin: 12px auto 0 auto;
+}
+
 /* ===========================================
-   ABOUT + SKILLS SCROLLABLE GRIDS
+   ABOUT SECTION
 =========================================== */
 
-.about-grid,
-.skills-grid {
+.bio {
+    max-width: 850px;
+    margin: auto;
+    line-height: 1.7;
+}
+
+.about-grid {
     display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    padding-bottom: 12px;
-    margin-top: 20px;
-    scroll-snap-type: x mandatory;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 30px;
 }
 
-.about-grid::-webkit-scrollbar,
-.skills-grid::-webkit-scrollbar {
-    height: 6px;
-}
-
-.about-grid::-webkit-scrollbar-thumb,
-.skills-grid::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 10px;
-}
-
-/* CARD STYLES (unchanged) */
-.about-card,
-.skill-card {
-    min-width: 180px;
-    padding: 18px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: var(--glass-blur);
-    border-radius: 12px;
-    text-align: center;
+.about-card {
+    padding: 20px 35px;
     transition: var(--transition-fast);
-    scroll-snap-align: start;
 }
 
-.about-card:hover,
+.about-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(68,149,229,0.25);
+}
+
+/* ===========================================
+   SKILLS GRID
+=========================================== */
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 25px;
+}
+
+.skill-card {
+    padding: 25px;
+    transition: var(--transition-fast);
+}
+
 .skill-card:hover {
-    transform: translateY(-6px);
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(68,149,229,0.3);
 }
 
-/* CONTACT GRID */
+/* ===========================================
+   EXPERIENCE SECTION
+=========================================== */
+
+.experience-list {
+    display: grid;
+    gap: 25px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.exp-card {
+    padding: 30px;
+    text-align: left;
+    transition: var(--transition-fast);
+}
+
+.exp-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ===========================================
+   EDUCATION
+=========================================== */
+
+.education-list {
+    display: grid;
+    gap: 25px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.edu-card {
+    padding: 25px;
+}
+
+/* ===========================================
+   LANGUAGE & HOBBIES
+=========================================== */
+
+.extras-grid {
+    display: flex;
+    justify-content: center;
+    gap: 45px;
+}
+
+.extra-card {
+    padding: 20px 35px;
+}
+
+/* ===========================================
+   DRIVE PREVIEW CARDS
+=========================================== */
+
+.folder-block {
+    margin-bottom: 45px;
+}
+
+.folder-title {
+    font-size: 1.6rem;
+    margin-bottom: 18px;
+}
+
+.scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 15px;
+}
+
+.preview-card {
+    min-width: 260px;
+    height: 195px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.preview-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(68,149,229,0.35);
+}
+
+.preview-label {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    font-size: 0.9rem;
+    color: rgb(68,150,230); /* ✔ fix applied */
+}
+
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+=========================================== */
+
+@media (max-width: 800px) {
+    .hero-title { font-size: 2.6rem; }
+    .hero-photo-frame { width: 130px; height: 130px; }
+    .about-grid { flex-direction: column; }
+    .extras-grid { flex-direction: column; gap: 25px; }
+}
+
+
+/* ===========================================
+   CONTACT TILES (Unified for brick + tile)
+=========================================== */
+
 .contact-links-grid {
     margin-top: 40px;
     display: grid;
@@ -145,26 +432,25 @@ body {
     margin-right: auto;
 }
 
+/* Both classes share same style */
+.contact-brick,
 .contact-tile {
     padding: 20px;
     text-align: center;
     border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+
+    /* Glassmorphism identical to skills tiles */
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     backdrop-filter: var(--glass-blur);
-    transition: var(--transition-fast);
-    cursor: pointer;
+
+    font-size: 1rem;
 }
 
+.contact-brick:hover,
 .contact-tile:hover {
     transform: translateY(-8px);
-}
-
-/* PREVIEW CARDS (unchanged) */
-.preview-card {
-    min-width: 260px;
-    height: 195px;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
+    box-shadow: 0 15px 30px rgba(68,149,229,0.25);
 }
