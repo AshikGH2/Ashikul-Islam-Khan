@@ -11,6 +11,17 @@ const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
 
 let gapiLoaded = false;
 
+function fadeOutLoader() {
+    const loader = document.getElementById("loading-screen");
+    if (!loader) return;
+
+    loader.style.opacity = "0";
+
+    setTimeout(() => {
+        loader.style.display = "none";
+    }, 600);
+}
+
 window.addEventListener("load", () => {
     fadeOutLoader();
     initCursor();
@@ -158,3 +169,4 @@ function updateSkills() {
 
 /* EXPERIENCE, EDUCATION, LANGUAGES, HOBBIES, CONTACT */
 /* unchanged */
+
