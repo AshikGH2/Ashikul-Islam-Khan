@@ -168,13 +168,12 @@ function updateAbout(text) {
         <div class="about-card glass">Graphic Designer</div>
         <div class="about-card glass">Economics Student</div>
         <div class="about-card glass">Aspiring Researcher</div>
-        <div class="about-card glass">Content Creator</div>
+        <div class="about-card glass">Aspiring Data Analyst</div>
     `;
 }
 
 function extractSummary(text) {
-    const match = text.match(/(Graphic Designer[\s\S]+?)(Skills|Education|Experience)/i);
-    return match ? match[1].trim() : "Passionate and skilled multidisciplinary professional.";
+    return "Baa Baa Black Sheep Baa Baa Black Sheep Baa Baa Black Sheep Baa Baa Black Sheep Baa Baa Black Sheep Baa Baa Black Sheep Baa Baa Black Sheep Baa Baa Black Sheep";
 }
 
 
@@ -509,5 +508,6 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
 
 
