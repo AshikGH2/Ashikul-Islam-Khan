@@ -26,6 +26,7 @@
 
         <div class="hero-content">
 
+            <!-- Profile Image (Loaded Dynamically) -->
             <div class="hero-photo-frame">
                 <img id="profile-photo" src="" alt="Profile Photo" />
             </div>
@@ -34,8 +35,12 @@
             <p class="hero-tagline">Department of Economics — University of Dhaka</p>
 
             <div class="hero-buttons">
-                <button class="primary-btn" onclick="scrollToSection('contact')">Contact Me</button>
-                <button class="secondary-btn" onclick="scrollToSection('my-works')">View Projects</button>
+                <button class="primary-btn" onclick="scrollToSection('contact')">
+                    Contact Me
+                </button>
+                <button class="secondary-btn" onclick="scrollToSection('my-works')">
+                    View Projects
+                </button>
             </div>
 
             <a id="cv-download-btn" class="cv-download-btn" target="_blank">
@@ -43,6 +48,7 @@
             </a>
         </div>
     </header>
+
 
     <!-- ABOUT SECTION -->
     <section id="about" class="section reveal">
@@ -55,11 +61,13 @@
         <div class="about-grid" id="about-tags"></div>
     </section>
 
+
     <!-- SKILLS SECTION -->
     <section id="skills" class="section reveal">
         <h2 class="section-title">Skills</h2>
         <div class="skills-grid" id="skills-container"></div>
     </section>
+
 
     <!-- EXPERIENCE SECTION -->
     <section id="experience" class="section reveal">
@@ -67,11 +75,13 @@
         <div class="experience-list" id="experience-container"></div>
     </section>
 
+
     <!-- EDUCATION SECTION -->
     <section id="education" class="section reveal">
         <h2 class="section-title">Education</h2>
         <div class="education-list" id="education-container"></div>
     </section>
+
 
     <!-- LANGUAGES & HOBBIES -->
     <section id="extras" class="section reveal">
@@ -90,12 +100,16 @@
         </div>
     </section>
 
+
     <!-- MY WORKS SECTION -->
     <section id="my-works" class="section reveal">
         <h2 class="section-title">My Works</h2>
 
-        <div id="works-container"></div>
+        <div id="works-container">
+            <!-- Subfolders from Google Drive load here -->
+        </div>
     </section>
+
 
     <!-- CONTENTS SECTION -->
     <section id="contents" class="section reveal">
@@ -103,23 +117,25 @@
         <div class="scroll-container" id="contents-video-container"></div>
     </section>
 
+
     <!-- CONTACT SECTION -->
     <section id="contact" class="section reveal">
         <h2 class="section-title">Contact</h2>
 
-        <div class="contact-links-grid">
+<div class="contact-links-grid">
 
-            <div class="contact-tile glass" onclick="window.open('tel:+8801753932582', '_blank')">Phone</div>
-            <div class="contact-tile glass" onclick="window.open('mailto:mail.ashikulislam@gmail.com', '_blank')">Email</div>
-            <div class="contact-tile glass" onclick="window.open('https://www.linkedin.com/in/ashikplays19', '_blank')">LinkedIn</div>
-            <div class="contact-tile glass" onclick="window.open('https://wa.me/+8801753932582', '_blank')">WhatsApp</div>
-            <div class="contact-tile glass" onclick="window.open('https://www.facebook.com/AshikKhan.fb', '_blank')">Facebook</div>
-            <div class="contact-tile glass" onclick="window.open('https://www.instagram.com/ashikplays19', '_blank')">Instagram</div>
-            <div class="contact-tile glass" onclick="window.open('https://www.x.com/AshikPlays19', '_blank')">Twitter</div>
+    <div class="contact-tile glass" onclick="window.open('tel:+8801753932582', '_blank')">Phone</div>
+    <div class="contact-tile glass" onclick="window.open('mailto:mail.ashikulislam@gmail.com', '_blank')">Email</div>
+    <div class="contact-tile glass" onclick="window.open('https://www.linkedin.com/in/ashikplays19', '_blank')">LinkedIn</div>
+    <div class="contact-tile glass" onclick="window.open('https://wa.me/+8801753932582', '_blank')">WhatsApp</div>
+    <div class="contact-tile glass" onclick="window.open('https://www.facebook.com/AshikKhan.fb', '_blank')">Facebook</div>
+    <div class="contact-tile glass" onclick="window.open('https://www.instagram.com/ashikplays19', '_blank')">Instagram</div>
+    <div class="contact-tile glass" onclick="window.open('https://www.x.com/AshikPlays19', '_blank')">Twitter</div>
 
-        </div>
+</div>
 
     </section>
+
 
     <!-- FOOTER -->
     <footer>
@@ -131,3 +147,10 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
