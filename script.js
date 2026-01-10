@@ -165,9 +165,9 @@ function updateAbout(text) {
     `;
 
     document.getElementById("about-tags").innerHTML = `
-        <div class="about-card glass">Graphic Designer</div>
         <div class="about-card glass">Economics Student</div>
-        <div class="about-card glass">Aspiring Researcher</div>
+        <div class="about-card glass">Mediocre Graphic Designer</div>
+        <div class="about-card glass">Mediocre Video Editor</div>
         <div class="about-card glass">Aspiring Data Analyst</div>
     `;
 }
@@ -508,6 +508,7 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
 
 
 
