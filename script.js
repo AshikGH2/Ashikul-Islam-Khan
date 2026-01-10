@@ -11,26 +11,20 @@ const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
 
 let gapiLoaded = false;
 
+/* FIX: Add fadeOutLoader back */
 function fadeOutLoader() {
     const loader = document.getElementById("loading-screen");
     if (!loader) return;
-
     loader.style.opacity = "0";
-
-    setTimeout(() => {
-        loader.style.display = "none";
-    }, 600);
+    setTimeout(() => loader.style.display = "none", 600);
 }
 
 window.addEventListener("load", () => {
     fadeOutLoader();
-    initCursor();
-    initScrollReveal();
-    initParallax();
-    startParticles();
     loadDriveAPI();
 });
 
+/* Load Google Drive API */
 function loadDriveAPI() {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
@@ -93,10 +87,10 @@ async function fetchAndExtractCV(fileId) {
         const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
         const pdfData = await fetch(url).then(r => r.arrayBuffer());
 
-        const pdfjsScript = document.createElement("script");
-        pdfjsScript.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
-        pdfjsScript.onload = () => extractPDF(pdfData);
-        document.body.appendChild(pdfjsScript);
+        const pdfScript = document.createElement("script");
+        pdfScript.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
+        pdfScript.onload = () => extractPDF(pdfData);
+        document.body.appendChild(pdfScript);
 
     } catch (err) {
         console.error("PDF extraction failed:", err);
@@ -120,22 +114,21 @@ async function extractPDF(buffer) {
 function parseCV(text) {
     updateAbout(text);
     updateSkills(text);
-    updateExperience(text);
-    updateEducation(text);
-    updateLanguages(text);
-    updateHobbies(text);
-    updateContactInfo(text);
+
+    // Disable others until you rewrite them
+    // updateExperience(text);
+    // updateEducation(text);
+    // updateLanguages(text);
+    // updateHobbies(text);
+    // updateContactInfo(text);
 }
 
-/* ABOUT SECTION */
-
+/* ABOUT SECTION – FIX #1: accept text */
 function updateAbout(text) {
     const aboutBox = document.getElementById("about-content");
 
     aboutBox.innerHTML = `
-        <p>
-            ~ The greatest rewards demand the highest sacrifice.
-        </p>
+        <p>~ The greatest rewards demand the highest sacrifice.</p>
     `;
 
     document.getElementById("about-tags").innerHTML = `
@@ -146,9 +139,8 @@ function updateAbout(text) {
     `;
 }
 
-/* SKILLS */
-
-function updateSkills() {
+/* SKILLS SECTION – FIX #1: accept text */
+function updateSkills(text) {
     const skills = [
         "Mediocre Graphic Designing",
         "Mediocre Video Editing",
@@ -166,7 +158,3 @@ function updateSkills() {
         container.innerHTML += `<div class="skill-card">${s}</div>`;
     });
 }
-
-/* EXPERIENCE, EDUCATION, LANGUAGES, HOBBIES, CONTACT */
-/* unchanged */
-
