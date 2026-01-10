@@ -1,19 +1,19 @@
-/* ==========================================================================
+/* ===========================================
    GOOGLE DRIVE API CONFIG
-   ========================================================================== */
+=========================================== */
 
 const API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E";
 const CLIENT_ID = "933969038608-s5kuf61bdlbp49jf729fppjiabel9sce.apps.googleusercontent.com";
 
 const MY_WORKS_FOLDER_ID = "1_H5wCZbyc8LMhcmb2wK3MkIBdf4hrjEd";
 const CONTENTS_FOLDER_ID = "1ioaYVdHLgGObZvDz2RtkyK8DpvSHTXMI";
-const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";   // Folder containing CV + profile.jpg
+const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
 
 let gapiLoaded = false;
 
-/* ==========================================================================
+/* ===========================================
    INITIAL LOAD
-   ========================================================================== */
+=========================================== */
 
 window.addEventListener("load", () => {
     fadeOutLoader();
@@ -24,9 +24,9 @@ window.addEventListener("load", () => {
     loadDriveAPI();
 });
 
-/* ==========================================================================
-   LOAD GOOGLE DRIVE API
-   ========================================================================== */
+/* ===========================================
+   LOAD GOOGLE DRIVE
+=========================================== */
 
 function loadDriveAPI() {
     const script = document.createElement("script");
@@ -44,25 +44,50 @@ async function initDrive() {
 
         gapiLoaded = true;
 
+        loadProfileImage();
+        loadLatestCV();
         loadMyWorks();
         loadContentsVideos();
-        loadLatestCV();
-        loadProfileImage();
 
     } catch (err) {
         console.error("Drive init error:", err);
     }
 }
 
-/* ==========================================================================
-   LOAD LATEST CV FILE
-   ========================================================================== */
+/* ===========================================
+   PROFILE IMAGE (DYNAMIC)
+=========================================== */
+
+async function loadProfileImage() {
+    const query = `'${CV_FOLDER_ID}' in parents and name='profile.jpg' and mimeType contains 'image/'`;
+
+    const response = await gapi.client.drive.files.list({
+        q: query,
+        fields: "files(id)"
+    });
+
+    if (!response.result.files.length) {
+        console.warn("No profile.jpg found.");
+        return;
+    }
+
+    const file = response.result.files[0];
+    const heroImg = document.getElementById("hero-profile");
+
+    heroImg.src = `https://drive.google.com/uc?export=view&id=${file.id}`;
+}
+
+/* ===========================================
+   LOAD LATEST CV (PDF)
+=========================================== */
 
 async function loadLatestCV() {
+    const query = `'${CV_FOLDER_ID}' in parents and mimeType='application/pdf'`;
+
     const response = await gapi.client.drive.files.list({
-        q: `'${CV_FOLDER_ID}' in parents and mimeType='application/pdf'`,
+        q: query,
         orderBy: "modifiedTime desc",
-        fields: "files(id, name, webViewLink)"
+        fields: "files(id, webViewLink)"
     });
 
     if (!response.result.files.length) return;
@@ -73,38 +98,9 @@ async function loadLatestCV() {
     fetchAndExtractCV(cv.id);
 }
 
-/* ==========================================================================
-   LOAD profile.jpg DYNAMICALLY (auto-update)
-   ========================================================================== */
-
-async function loadProfileImage() {
-    const response = await gapi.client.drive.files.list({
-        q: `'${CV_FOLDER_ID}' in parents and mimeType contains 'image/'`,
-        fields: "files(id, name)"
-    });
-
-    if (!response.result.files.length) {
-        console.warn("No images found in CV folder.");
-        return;
-    }
-
-    // Pick file with "profile" in name
-    const file = response.result.files.find(f => f.name.toLowerCase().includes("profile"));
-
-    if (!file) {
-        console.warn("profile.jpg not found.");
-        return;
-    }
-
-    const heroImg = document.getElementById("hero-profile");
-
-    // Direct image link (never expires)
-    heroImg.src = `https://drive.google.com/uc?export=view&id=${file.id}`;
-}
-
-/* ==========================================================================
-   PDF TEXT EXTRACTION
-   ========================================================================== */
+/* ===========================================
+   PDF EXTRACT + PARSE
+=========================================== */
 
 async function fetchAndExtractCV(fileId) {
     try {
@@ -131,15 +127,14 @@ async function extractPDF(buffer) {
         fullText += content.items.map(t => t.str).join(" ") + "\n";
     }
 
-    parseCVText(fullText);
+    parseCV(fullText);
 }
 
-/* ==========================================================================
-   CV PARSING (placeholder)
-   ========================================================================== */
+/* ===========================================
+   PARSE + UPDATE UI
+=========================================== */
 
-function parseCVText(text) {
-    // Keep your static CV parsing logic for now
+function parseCV(text) {
     updateAbout();
     updateSkills();
     updateExperience();
@@ -148,108 +143,96 @@ function parseCVText(text) {
     updateHobbies();
 }
 
-/* ==========================================================================
-   MY WORKS — LOAD SUBFOLDERS
-   ========================================================================== */
+/* STATIC SECTIONS */
+
+function updateAbout() {
+    document.getElementById("about-content").innerHTML = `
+        <p>Motivated and passionate educator with strong communication skills.</p>
+    `;
+    document.getElementById("about-tags").innerHTML = `
+        <div class="about-card glass">Educator</div>
+        <div class="about-card glass">English Instructor</div>
+        <div class="about-card glass">Economics Student</div>
+        <div class="about-card glass">Public Speaker</div>
+    `;
+}
+
+function updateSkills() {
+    const skills = ["Communication", "Public Speaking", "Problem Solving", "Graphics Design", "Teaching", "MS Office"];
+    document.getElementById("skills-container").innerHTML = skills.map(s => `<div class="skill-card glass">${s}</div>`).join("");
+}
+
+function updateExperience() {
+    document.getElementById("experience-container").innerHTML = `
+        <div class="exp-card glass"><h3>English Instructor — Core Academy</h3><p>June 2023 — August 2023</p></div>
+        <div class="exp-card glass"><h3>Executive Member — Economics Cultural Club</h3><p>2024 — Present</p></div>
+    `;
+}
+
+function updateEducation() {
+    document.getElementById("education-container").innerHTML = `
+        <div class="edu-card glass"><h3>BSS in Economics</h3><p>University of Dhaka</p></div>
+        <div class="edu-card glass"><h3>HSC — Humanities</h3><p>Amrita Lal Dey College</p></div>
+        <div class="edu-card glass"><h3>SSC — Humanities</h3><p>Shahid Arju Moni Govt. School</p></div>
+    `;
+}
+
+function updateLanguages() {
+    document.getElementById("languages-container").innerHTML += `
+        <p>Bangla — Native</p><p>English — Fluent</p>
+    `;
+}
+
+function updateHobbies() {
+    document.getElementById("hobbies-container").innerHTML += `
+        <p>Debate</p><p>Poetry</p><p>Singing</p><p>Football</p><p>Research</p>
+    `;
+}
+
+/* ===========================================
+   FILE PREVIEW CARDS
+=========================================== */
 
 async function loadMyWorks() {
     if (!gapiLoaded) return;
 
     const response = await gapi.client.drive.files.list({
-        q: `'${MY_WORKS_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.folder'`,
-        fields: "files(id, name)"
-    });
-
-    const container = document.getElementById("works-container");
-    container.innerHTML = "";
-
-    response.result.files.forEach(folder => {
-        container.innerHTML += `
-            <div class="folder-block">
-                <h3 class="folder-title">${folder.name}</h3>
-                <div class="scroll-container" id="folder-${folder.id}"></div>
-            </div>
-        `;
-        loadFilesInSubfolder(folder.id);
-    });
-}
-
-async function loadFilesInSubfolder(folderId) {
-    const response = await gapi.client.drive.files.list({
-        q: `'${folderId}' in parents`,
+        q: `'${MY_WORKS_FOLDER_ID}' in parents`,
         fields: "files(id, name, mimeType, thumbnailLink, webViewLink)"
     });
 
-    const container = document.getElementById(`folder-${folderId}`);
-    container.innerHTML = "";
+    const container = document.getElementById("works-container");
 
     response.result.files.forEach(file => {
         container.appendChild(createPreviewCard(file));
     });
 }
 
-/* ==========================================================================
-   CONTENTS — VIDEO ONLY
-   ========================================================================== */
-
-async function loadContentsVideos() {
-    const response = await gapi.client.drive.files.list({
-        q: `'${CONTENTS_FOLDER_ID}' in parents and mimeType contains 'video/'`,
-        fields: "files(id, name, thumbnailLink, webViewLink)"
-    });
-
-    const container = document.getElementById("contents-video-container");
-    container.innerHTML = "";
-
-    response.result.files.forEach(video => {
-        container.appendChild(createPreviewCard(video));
-    });
-}
-
-/* ==========================================================================
-   PREVIEW CARD GENERATOR (FULLY FIXED)
-   ========================================================================== */
-
 function createPreviewCard(file) {
     const card = document.createElement("div");
     card.className = "preview-card";
 
     const img = document.createElement("img");
+    img.crossOrigin = "anonymous";
 
-    // Google's thumbnailLink is unreliable now → use hard direct thumbnail endpoint
-    if (file.thumbnailLink) {
-        img.src = `https://drive.google.com/thumbnail?authuser=0&sz=w1000&id=${file.id}`;
-    } else if (file.mimeType === "application/pdf") {
-        img.src = `https://drive.google.com/thumbnail?authuser=0&sz=w1000&id=${file.id}`;
-    } else {
-        img.src = "https://via.placeholder.com/300x200?text=No+Preview";
-    }
+    img.src = file.thumbnailLink
+        ? file.thumbnailLink
+        : `https://drive.google.com/uc?export=view&id=${file.id}`;
 
     const label = document.createElement("div");
     label.className = "preview-label";
     label.innerText = file.name;
 
-    img.onload = () => {
-        detectBrightness(img, brightness => {
-            label.style.color = brightness > 160 ? "black" : "white";
-        });
-    };
-
-    img.onerror = () => {
-        img.src = "https://via.placeholder.com/300x200?text=Preview+Unavailable";
-        label.style.color = "white";
-    };
+    img.onload = () => detectBrightness(img, b => {
+        label.style.color = b > 160 ? "black" : "white";
+    });
 
     card.appendChild(img);
     card.appendChild(label);
-    card.onclick = () => window.open(file.webViewLink, "_blank");
 
+    card.onclick = () => window.open(file.webViewLink, "_blank");
     return card;
 }
-
-/* ==========================================================================
-   BRIGHTNESS DETECTION
-   ========================================================================== */
 
 function detectBrightness(image, callback) {
     const canvas = document.createElement("canvas");
@@ -261,23 +244,22 @@ function detectBrightness(image, callback) {
     try {
         ctx.drawImage(image, 0, 0);
     } catch {
-        callback(200);  // Assume bright to make text black
+        callback(255);
         return;
     }
 
     const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
     let brightness = 0;
 
-    for (let i = 0; i < data.length; i += 4) {
+    for (let i = 0; i < data.length; i += 4)
         brightness += (data[i] + data[i + 1] + data[i + 2]) / 3;
-    }
 
     callback(brightness / (data.length / 4));
 }
 
-/* ==========================================================================
-   UI EFFECTS
-   ========================================================================== */
+/* ===========================================
+   CURSOR
+=========================================== */
 
 function initCursor() {
     const c = document.getElementById("cursor");
@@ -286,36 +268,43 @@ function initCursor() {
     document.addEventListener("mousemove", e => {
         c.style.left = e.pageX + "px";
         c.style.top = e.pageY + "px";
-
         f.style.left = (e.pageX - 10) + "px";
         f.style.top = (e.pageY - 10) + "px";
     });
 }
 
+/* ===========================================
+   SCROLL REVEAL
+=========================================== */
+
 function initScrollReveal() {
     const elements = document.querySelectorAll(".reveal");
-
     function reveal() {
         elements.forEach(el => {
-            if (el.getBoundingClientRect().top < window.innerHeight - 100) {
+            if (el.getBoundingClientRect().top < window.innerHeight - 100)
                 el.classList.add("visible");
-            }
         });
     }
-
     window.addEventListener("scroll", reveal);
     reveal();
 }
 
+/* ===========================================
+   PARALLAX
+=========================================== */
+
 function initParallax() {
     const content = document.querySelector(".hero-content");
-
     document.addEventListener("mousemove", e => {
         const x = (window.innerWidth / 2 - e.clientX) * 0.01;
         const y = (window.innerHeight / 2 - e.clientY) * 0.01;
-        content.style.transform = `translateY(calc(-50% + ${y}px)) translateX(${x}px)`;
+        content.style.transform = `translate(-50%, calc(-50% + ${y}px)) translateX(${x}px)`;
     });
 }
+
+/* ===========================================
+   PARTICLES
+=========================================== */
 
 function startParticles() {
     const canvas = document.getElementById("particle-canvas");
@@ -325,43 +314,46 @@ function startParticles() {
     canvas.height = window.innerHeight;
 
     const particles = [];
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 90; i++)
         particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             r: Math.random() * 2 + 1,
-            vx: (Math.random() - 0.5) * 0.4,
-            vy: (Math.random() - 0.5) * 0.4
+            sX: (Math.random() - 0.5) * 0.6,
+            sY: (Math.random() - 0.5) * 0.6
         });
-    }
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "rgba(255,255,255,0.8)";
-
         particles.forEach(p => {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fill();
-
-            p.x += p.vx;
-            p.y += p.vy;
-
-            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            p.x += p.sX;
+            p.y += p.sY;
+            if (p.x < 0 || p.x > canvas.width) p.sX *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.sY *= -1;
         });
 
         requestAnimationFrame(animate);
     }
-
     animate();
 }
+
+/* ===========================================
+   LOADER
+=========================================== */
 
 function fadeOutLoader() {
     const loader = document.getElementById("loading-screen");
     loader.style.opacity = "0";
     setTimeout(() => loader.style.display = "none", 600);
 }
+
+/* ===========================================
+   SCROLL TO SECTION
+=========================================== */
 
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
