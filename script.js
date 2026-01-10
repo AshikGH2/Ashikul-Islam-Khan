@@ -118,7 +118,7 @@ function parseCV(text) {
 
 /* ABOUT SECTION */
 
-function updateAbout() {
+function updateAbout(text) {
     const aboutBox = document.getElementById("about-content");
 
     aboutBox.innerHTML = `
@@ -157,5 +157,4 @@ function updateSkills() {
 }
 
 /* EXPERIENCE, EDUCATION, LANGUAGES, HOBBIES, CONTACT */
- 
-/* unchanged from your version — no modifications needed */
+/* unchanged */
