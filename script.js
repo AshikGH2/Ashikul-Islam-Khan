@@ -173,7 +173,7 @@ function updateAbout(text) {
 }
 
 function extractSummary(text) {
-    return "~ The greatest rewards demand the highest sacrifice";
+    return "~ The greatest rewards demand the highest sacrifice.";
 }
 
 
@@ -508,6 +508,7 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
 
 
 
