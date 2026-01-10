@@ -168,7 +168,7 @@ function updateAbout(text) {
         <div class="about-card glass">Economics Student</div>
         <div class="about-card glass">Mediocre Graphic Designer</div>
         <div class="about-card glass">Mediocre Video Editor</div>
-        <div class="about-card glass">Aspiring Data Analyst</div>
+        <div class="about-card glass">Aspiring Data Analyst & Researcher</div>
     `;
 }
 
@@ -183,9 +183,9 @@ function extractSummary(text) {
 
 function updateSkills(text) {
     const skills = [
-        "Graphic Design",
+        "Mediocre Graphic Designing",
+        "Mediocre Video Editing",
         "Content Writing",
-        "Research",
         "Presentation",
         "Debating",
         "Communication",
@@ -508,6 +508,7 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
 
 
 
