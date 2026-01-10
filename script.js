@@ -94,7 +94,8 @@ async function loadCVAndProfile() {
 function loadProfilePhoto(fileId) {
     const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
 
-    const img = document.getElementById("hero-profile-photo");
+    const img = document.getElementById("profile-photo");  // ✔ correct ID
+
     if (img) img.src = url;
 }
 
