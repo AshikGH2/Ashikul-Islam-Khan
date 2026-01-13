@@ -2,7 +2,7 @@
    GOOGLE API CONFIG
    ========================================================================== */
 
-const GOOGLE_API_KEY = "AIzaSyBbDGpxX0UF2SnJe-X31jBz0HsEXzzDz2k";  // <--- REPLACE THIS ONLY
+const GOOGLE_API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E";  // <--- REPLACE THIS ONLY
 const MY_WORKS_FOLDER_ID = "1_H5wCZbyc8LMhcmb2wK3MkIBdf4hrjEd";
 const CONTENTS_CHANNEL_ID = "UCD56-UAP7KCQNiICDla2w7Q";
 const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
@@ -418,3 +418,4 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
