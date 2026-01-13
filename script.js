@@ -353,18 +353,50 @@ async function loadFilesInSubfolder(folderId) {
    CONTENTS VIDEOS
    ========================================================================== */
 
+const CHANNEL_ID = "UCD56-UAP7KCQNiICDla2w7Q";
+const API_KEY = "YOUR_API_KEY_HERE";
+
 async function loadContentsVideos() {
-    const response = await gapi.client.drive.files.list({
-        q: `'${CONTENTS_FOLDER_ID}' in parents and mimeType contains 'video/'`,
-        fields: "files(id, name, thumbnailLink, webViewLink)"
+    await gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"]
+    });
+
+    const response = await gapi.client.youtube.search.list({
+        part: "snippet",
+        channelId: CHANNEL_ID,
+        maxResults: 50,
+        order: "date",
+        type: "video"
     });
 
     const container = document.getElementById("contents-video-container");
+    container.innerHTML = "";
 
-    response.result.files.forEach(video => {
+    response.result.items.forEach(video => {
         container.appendChild(createPreviewCard(video));
     });
 }
+
+function createPreviewCard(video) {
+    const card = document.createElement("div");
+    card.className = "preview-card";
+
+    const thumbnailUrl = video.snippet.thumbnails.medium.url;
+    const videoId = video.id.videoId;
+    const videoTitle = video.snippet.title;
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+    card.innerHTML = `
+        <a href="${videoUrl}" target="_blank">
+            <img src="${thumbnailUrl}" alt="${videoTitle}" class="preview-thumbnail">
+            <h3 class="preview-title">${videoTitle}</h3>
+        </a>
+    `;
+
+    return card;
+}
+
 
 
 /* ==========================================================================
@@ -508,3 +540,4 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
            }
+
