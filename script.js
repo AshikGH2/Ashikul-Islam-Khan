@@ -47,7 +47,7 @@ async function initGoogleClient() {
 
         loadCVAndProfile();
         loadMyWorks();
-        loadYouTubeContents();
+        loadYouTubeContents(); // Updated version
 
     } catch (error) {
         console.error("Google API initialization failed:", error);
@@ -55,7 +55,7 @@ async function initGoogleClient() {
 }
 
 /* ==========================================================================
-   LOAD CV + PROFILE PHOTO
+   LOAD CV + PROFILE (Drive)
    ========================================================================== */
 
 async function loadCVAndProfile() {
@@ -91,7 +91,7 @@ function loadProfilePhoto(fileId) {
 }
 
 /* ==========================================================================
-   PDF EXTRACT
+   PDF EXTRACT + PARSE
    ========================================================================== */
 
 async function fetchAndExtractCV(fileId) {
@@ -117,10 +117,6 @@ async function extractPDF(buffer) {
     parseCV(text);
 }
 
-/* ==========================================================================
-   PARSE CV
-   ========================================================================== */
-
 function parseCV(text) {
     updateAbout(text);
     updateSkills(text);
@@ -132,10 +128,10 @@ function parseCV(text) {
 }
 
 /* ==========================================================================
-   ABOUT SECTION
+   ABOUT / SKILLS / EXPERIENCE / EDUCATION / LANGUAGES / HOBBIES
    ========================================================================== */
 
-function updateAbout(text) {
+function updateAbout() {
     document.getElementById("about-content").innerHTML = `
         <p>~ The greatest rewards demand the highest sacrifice.</p>
     `;
@@ -147,10 +143,6 @@ function updateAbout(text) {
         <div class="about-card glass">Aspiring Data Analyst & Researcher</div>
     `;
 }
-
-/* ==========================================================================
-   SKILLS
-   ========================================================================== */
 
 function updateSkills() {
     const skills = [
@@ -167,23 +159,15 @@ function updateSkills() {
         skills.map(s => `<div class="skill-card glass">${s}</div>`).join("");
 }
 
-/* ==========================================================================
-   EXPERIENCE
-   ========================================================================== */
-
 function updateExperience() {
     document.getElementById("experience-container").innerHTML = `
         <div class="exp-card glass"><h3>Graphic Designer — PPSRF</h3><p>2025 — Present</p></div>
-        <div class="exp-card glass"><h3>Associate Member — Economics Study Center</h3><p>2024 — Present</p></div>
+        <div class="exp-card glass"><h3>Associate Member — ESC</h3><p>2024 — Present</p></div>
         <div class="exp-card glass"><h3>Talent Acquisition Secretary — ECC</h3><p>2024 — Present</p></div>
         <div class="exp-card glass"><h3>Organising Associate — ECA</h3><p>2021 — 2023</p></div>
         <div class="exp-card glass"><h3>Joint Co-ordinator — ARANYAK</h3><p>2021 — 2023</p></div>
     `;
 }
-
-/* ==========================================================================
-   EDUCATION
-   ========================================================================== */
 
 function updateEducation() {
     document.getElementById("education-container").innerHTML = `
@@ -192,10 +176,6 @@ function updateEducation() {
         <div class="edu-card glass"><h3>Secondary School Certificate</h3><p>Kaunia Govt. Secondary School</p></div>
     `;
 }
-
-/* ==========================================================================
-   LANGUAGES / HOBBIES
-   ========================================================================== */
 
 function updateLanguages() {
     document.getElementById("languages-container").innerHTML = `
@@ -216,10 +196,6 @@ function updateHobbies() {
     `;
 }
 
-/* ==========================================================================
-   CONTACT INFO
-   ========================================================================== */
-
 function updateContactInfo(text) {
     const email = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i) || "mail.ashikulislam@gmail.com";
     const phone = text.match(/\+?\d[\d\s-]{7,14}\d/) || "+8801753932582";
@@ -231,7 +207,7 @@ function updateContactInfo(text) {
 }
 
 /* ==========================================================================
-   MY WORKS (DRIVE)
+   MY WORKS (GOOGLE DRIVE)
    ========================================================================== */
 
 async function loadMyWorks() {
@@ -288,30 +264,37 @@ function createDrivePreviewCard(file) {
 }
 
 /* ==========================================================================
-   YOUTUBE CONTENTS
+   YOUTUBE CONTENTS (Corrected to use uploads playlist)
    ========================================================================== */
 
 async function loadYouTubeContents() {
-    const response = await gapi.client.youtube.search.list({
+    // STEP 1 — Get the hidden uploads playlist ID
+    const channelResponse = await gapi.client.youtube.channels.list({
+        part: "contentDetails",
+        id: CONTENTS_CHANNEL_ID
+    });
+
+    const uploadsPlaylistId = channelResponse.result.items[0].contentDetails.relatedPlaylists.uploads;
+
+    // STEP 2 — Get actual uploaded videos
+    const videoResponse = await gapi.client.youtube.playlistItems.list({
         part: "snippet",
-        channelId: CONTENTS_CHANNEL_ID,
-        maxResults: 50,
-        order: "date",
-        type: "video"
+        playlistId: uploadsPlaylistId,
+        maxResults: 50
     });
 
     const container = document.getElementById("contents-video-container");
     container.innerHTML = "";
 
-    response.result.items.forEach(video => {
-        container.appendChild(createYouTubePreviewCard(video));
+    videoResponse.result.items.forEach(item => {
+        container.appendChild(createYouTubePreviewCard(item.snippet));
     });
 }
 
-function createYouTubePreviewCard(video) {
-    const videoId = video.id.videoId;
-    const title = video.snippet.title;
-    const thumbnail = video.snippet.thumbnails.medium.url;
+function createYouTubePreviewCard(snippet) {
+    const videoId = snippet.resourceId.videoId;
+    const thumbnail = snippet.thumbnails.medium.url;
+    const title = snippet.title;
     const url = `https://www.youtube.com/watch?v=${videoId}`;
 
     const card = document.createElement("div");
@@ -418,4 +401,3 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
-
