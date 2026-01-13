@@ -2,9 +2,9 @@
    GOOGLE API CONFIG
    ========================================================================== */
 
-const GOOGLE_API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E";  // <--- REPLACE THIS ONLY
+const GOOGLE_API_KEY = "AIzaSyBbDGpxX0UF2SnJe-X31jBz0HsEXzzDz2k";  
 const MY_WORKS_FOLDER_ID = "1_H5wCZbyc8LMhcmb2wK3MkIBdf4hrjEd";
-const CONTENTS_CHANNEL_ID = "UCD56-UAP7KCQNiICDla2w7Q";
+const CONTENTS_CHANNEL_ID = "UCbKxFaDRN1-nQ6tulZd6sZQ"; // ✔ CORRECT CHANNEL ID
 const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
 
 let gapiLoaded = false;
@@ -47,7 +47,7 @@ async function initGoogleClient() {
 
         loadCVAndProfile();
         loadMyWorks();
-        loadYouTubeContents(); // Updated version
+        loadYouTubeContents(); // Loads channel videos correctly
 
     } catch (error) {
         console.error("Google API initialization failed:", error);
@@ -55,7 +55,7 @@ async function initGoogleClient() {
 }
 
 /* ==========================================================================
-   LOAD CV + PROFILE (Drive)
+   LOAD CV + PROFILE (Google Drive)
    ========================================================================== */
 
 async function loadCVAndProfile() {
@@ -91,7 +91,7 @@ function loadProfilePhoto(fileId) {
 }
 
 /* ==========================================================================
-   PDF EXTRACT + PARSE
+   PDF EXTRACTION
    ========================================================================== */
 
 async function fetchAndExtractCV(fileId) {
@@ -120,8 +120,8 @@ async function extractPDF(buffer) {
 function parseCV(text) {
     updateAbout(text);
     updateSkills(text);
-    updateExperience(text);
-    updateEducation(text);
+    updateExperience();
+    updateEducation();
     updateLanguages();
     updateHobbies();
     updateContactInfo(text);
@@ -207,7 +207,7 @@ function updateContactInfo(text) {
 }
 
 /* ==========================================================================
-   MY WORKS (GOOGLE DRIVE)
+   MY WORKS (Google Drive)
    ========================================================================== */
 
 async function loadMyWorks() {
@@ -264,19 +264,20 @@ function createDrivePreviewCard(file) {
 }
 
 /* ==========================================================================
-   YOUTUBE CONTENTS (Corrected to use uploads playlist)
+   YOUTUBE CONTENTS (Uploads Playlist Method)
    ========================================================================== */
 
 async function loadYouTubeContents() {
-    // STEP 1 — Get the hidden uploads playlist ID
+    // STEP 1 — Get the correct uploads playlist ID for your channel
     const channelResponse = await gapi.client.youtube.channels.list({
         part: "contentDetails",
         id: CONTENTS_CHANNEL_ID
     });
 
-    const uploadsPlaylistId = channelResponse.result.items[0].contentDetails.relatedPlaylists.uploads;
+    const uploadsPlaylistId =
+        channelResponse.result.items[0].contentDetails.relatedPlaylists.uploads;
 
-    // STEP 2 — Get actual uploaded videos
+    // STEP 2 — Retrieve videos from the uploads playlist
     const videoResponse = await gapi.client.youtube.playlistItems.list({
         part: "snippet",
         playlistId: uploadsPlaylistId,
@@ -302,7 +303,7 @@ function createYouTubePreviewCard(snippet) {
 
     card.innerHTML = `
         <a href="${url}" target="_blank">
-            <img src="${thumbnail}" class="preview-thumbnail" />
+            <img src="${thumbnail}" class="preview-thumbnail">
             <h3 class="preview-title">${title}</h3>
         </a>
     `;
@@ -401,3 +402,4 @@ function fadeOutLoader() {
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+
