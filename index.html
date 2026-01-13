@@ -113,9 +113,21 @@
 
     <!-- CONTENTS SECTION -->
     <section id="contents" class="section reveal">
-        <h2 class="section-title">Contents</h2>
-        <div class="scroll-container" id="contents-video-container"></div>
-    </section>
+    <h2 class="section-title">Contents</h2>
+    <div class="scroll-container" id="contents-video-container"></div>
+</section>
+
+<!-- Load Google API Client -->
+<script src="https://apis.google.com/js/api.js"></script>
+
+<!-- Initialize YouTube loading -->
+<script>
+    gapi.load("client", loadContentsVideos);
+</script>
+
+<!-- Your script.js file -->
+<script src="script.js"></script>
+
 
 
     <!-- CONTACT SECTION -->
@@ -147,6 +159,7 @@
 
 </body>
 </html>
+
 
 
 
