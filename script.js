@@ -1,16 +1,13 @@
 /* ==========================================================================
-   GOOGLE DRIVE API CONFIG
+   GOOGLE API CONFIG
    ========================================================================== */
 
-const API_KEY = "AIzaSyDenRHJmnv7_AJviKmMUcu1M6SFY6OAC7E";
-const CLIENT_ID = "933969038608-s5kuf61bdlbp49jf729fppjiabel9sce.apps.googleusercontent.com";
-
+const GOOGLE_API_KEY = "AIzaSyBbDGpxX0UF2SnJe-X31jBz0HsEXzzDz2k";  // <--- REPLACE THIS ONLY
 const MY_WORKS_FOLDER_ID = "1_H5wCZbyc8LMhcmb2wK3MkIBdf4hrjEd";
-const CONTENTS_FOLDER_ID = "1ioaYVdHLgGObZvDz2RtkyK8DpvSHTXMI";
-const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2"; // contains CV + profile.jpg
+const CONTENTS_CHANNEL_ID = "UCD56-UAP7KCQNiICDla2w7Q";
+const CV_FOLDER_ID = "1ihbICYkTTaSSeWy64ZvFNDYLCR6LpiX2";
 
 let gapiLoaded = false;
-
 
 /* ==========================================================================
    INITIAL LOAD
@@ -22,146 +19,125 @@ window.addEventListener("load", () => {
     initScrollReveal();
     initParallax();
     startParticles();
-    loadDriveAPI();
+    loadGoogleAPI();
 });
 
-
 /* ==========================================================================
-   LOAD GOOGLE DRIVE API
+   LOAD GOOGLE API (Drive + YouTube unified)
    ========================================================================== */
 
-function loadDriveAPI() {
+function loadGoogleAPI() {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
-    script.onload = () => gapi.load("client", initDrive);
+    script.onload = () => gapi.load("client", initGoogleClient);
     document.body.appendChild(script);
 }
 
-async function initDrive() {
+async function initGoogleClient() {
     try {
         await gapi.client.init({
-            apiKey: API_KEY,
-            discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]
+            apiKey: GOOGLE_API_KEY,
+            discoveryDocs: [
+                "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+                "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"
+            ]
         });
 
         gapiLoaded = true;
 
         loadCVAndProfile();
         loadMyWorks();
-        loadContentsVideos();
+        loadYouTubeContents();
 
-    } catch (err) {
-        console.error("Drive init error:", err);
+    } catch (error) {
+        console.error("Google API initialization failed:", error);
     }
 }
-
 
 /* ==========================================================================
    LOAD CV + PROFILE PHOTO
    ========================================================================== */
 
 async function loadCVAndProfile() {
-    const files = await gapi.client.drive.files.list({
+    const response = await gapi.client.drive.files.list({
         q: `'${CV_FOLDER_ID}' in parents`,
         fields: "files(id, name, mimeType, webViewLink, thumbnailLink)"
     });
 
-    if (!files.result.files.length) return;
+    const files = response.result.files;
+    if (!files || !files.length) return;
 
-    let cvFile = null;
-    let profileFile = null;
+    let cv = null;
+    let profile = null;
 
-    files.result.files.forEach(f => {
-        if (f.mimeType === "application/pdf") cvFile = f;
-        if (f.name.toLowerCase().includes("profile")) profileFile = f;
+    files.forEach(f => {
+        if (f.mimeType === "application/pdf") cv = f;
+        if (f.name.toLowerCase().includes("profile")) profile = f;
     });
 
-    if (cvFile) {
-        document.getElementById("cv-download-btn").href = cvFile.webViewLink;
-        fetchAndExtractCV(cvFile.id);
+    if (cv) {
+        document.getElementById("cv-download-btn").href = cv.webViewLink;
+        fetchAndExtractCV(cv.id);
     }
 
-    if (profileFile) {
-        loadProfilePhoto(profileFile.id);
+    if (profile) {
+        loadProfilePhoto(profile.id);
     }
 }
-
-
-/* ==========================================================================
-   LOAD PROFILE PHOTO
-   ========================================================================== */
 
 function loadProfilePhoto(fileId) {
-    const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
-
-    const img = document.getElementById("profile-photo");  // ✔ correct ID
-
-    if (img) img.src = url;
+    const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${GOOGLE_API_KEY}`;
+    document.getElementById("profile-photo").src = url;
 }
 
-
 /* ==========================================================================
-   PDF FETCH + TEXT EXTRACTION
+   PDF EXTRACT
    ========================================================================== */
 
 async function fetchAndExtractCV(fileId) {
-    try {
-        const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
+    const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${GOOGLE_API_KEY}`;
+    const pdfData = await fetch(url).then(r => r.arrayBuffer());
 
-        const pdfData = await fetch(url).then(r => r.arrayBuffer());
-
-        const pdfjsScript = document.createElement("script");
-        pdfjsScript.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
-        pdfjsScript.onload = () => extractPDF(pdfData);
-        document.body.appendChild(pdfjsScript);
-
-    } catch (err) {
-        console.error("PDF extraction failed:", err);
-    }
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
+    script.onload = () => extractPDF(pdfData);
+    document.body.appendChild(script);
 }
 
 async function extractPDF(buffer) {
     const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
 
-    let fullText = "";
-
+    let text = "";
     for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
-        fullText += content.items.map(a => a.str).join(" ") + "\n";
+        text += content.items.map(a => a.str).join(" ") + "\n";
     }
 
-    parseCV(fullText);
+    parseCV(text);
 }
 
-
 /* ==========================================================================
-   PARSE CV TEXT
+   PARSE CV
    ========================================================================== */
 
 function parseCV(text) {
-
     updateAbout(text);
     updateSkills(text);
     updateExperience(text);
     updateEducation(text);
-    updateLanguages(text);
-    updateHobbies(text);
+    updateLanguages();
+    updateHobbies();
     updateContactInfo(text);
 }
-
 
 /* ==========================================================================
    ABOUT SECTION
    ========================================================================== */
 
 function updateAbout(text) {
-    const aboutBox = document.getElementById("about-content");
-
-    aboutBox.innerHTML = `
-        <p>
-            ${extractSummary(text)}
-        </p>
+    document.getElementById("about-content").innerHTML = `
+        <p>~ The greatest rewards demand the highest sacrifice.</p>
     `;
 
     document.getElementById("about-tags").innerHTML = `
@@ -172,16 +148,11 @@ function updateAbout(text) {
     `;
 }
 
-function extractSummary(text) {
-    return "~ The greatest rewards demand the highest sacrifice.";
-}
-
-
 /* ==========================================================================
    SKILLS
    ========================================================================== */
 
-function updateSkills(text) {
+function updateSkills() {
     const skills = [
         "Mediocre Graphic Designing",
         "Mediocre Video Editing",
@@ -192,81 +163,38 @@ function updateSkills(text) {
         "Software Proficiency"
     ];
 
-    const container = document.getElementById("skills-container");
-    container.innerHTML = "";
-
-    skills.forEach(s => {
-        container.innerHTML += `<div class="skill-card glass">${s}</div>`;
-    });
+    document.getElementById("skills-container").innerHTML =
+        skills.map(s => `<div class="skill-card glass">${s}</div>`).join("");
 }
-
 
 /* ==========================================================================
    EXPERIENCE
    ========================================================================== */
 
-function updateExperience(text) {
-    const box = document.getElementById("experience-container");
-
-    box.innerHTML = `
-        <div class="exp-card glass">
-            <h3>Graphic Designer — PPSRF</h3>
-            <p>2025 — Present</p>
-        </div>
-        <div class="exp-card glass">
-            <h3>Associate Member — Economics Study Center</h3>
-            <p>2024 — Present</p>
-        </div>
-
-        <div class="exp-card glass">
-            <h3>Talent Acquisition Secretary — ECC</h3>
-            <p>2024 — Present</p>
-        </div>
-
-        <div class="exp-card glass">
-            <h3>Organising Associate — ECA</h3>
-            <p>2021 — 2023</p>
-        </div>
-
-        <div class="exp-card glass">
-            <h3>Joint Co-ordinator — ARANYAK</h3>
-            <p>2021 — 2023</p>
-        </div>
+function updateExperience() {
+    document.getElementById("experience-container").innerHTML = `
+        <div class="exp-card glass"><h3>Graphic Designer — PPSRF</h3><p>2025 — Present</p></div>
+        <div class="exp-card glass"><h3>Associate Member — Economics Study Center</h3><p>2024 — Present</p></div>
+        <div class="exp-card glass"><h3>Talent Acquisition Secretary — ECC</h3><p>2024 — Present</p></div>
+        <div class="exp-card glass"><h3>Organising Associate — ECA</h3><p>2021 — 2023</p></div>
+        <div class="exp-card glass"><h3>Joint Co-ordinator — ARANYAK</h3><p>2021 — 2023</p></div>
     `;
 }
-
 
 /* ==========================================================================
    EDUCATION
    ========================================================================== */
 
-function updateEducation(text) {
-    const box = document.getElementById("education-container");
-
-    box.innerHTML = `
-        <div class="edu-card glass">
-            <h3>BSS in Economics</h3>
-            <p>University of Dhaka</p>
-            <p>2023 — Present</p>
-        </div>
-
-        <div class="edu-card glass">
-            <h3>Higher Secondary Certificate</h3>
-            <p>Amrita Lal Dey College</p>
-            
-        </div>
-
-        <div class="edu-card glass">
-            <h3>Secondary School Certificate</h3>
-            <p>Kaunia Govt. Secondary School</p>
-            
-        </div>
+function updateEducation() {
+    document.getElementById("education-container").innerHTML = `
+        <div class="edu-card glass"><h3>BSS in Economics</h3><p>University of Dhaka</p><p>2023 — Present</p></div>
+        <div class="edu-card glass"><h3>Higher Secondary Certificate</h3><p>Amrita Lal Dey College</p></div>
+        <div class="edu-card glass"><h3>Secondary School Certificate</h3><p>Kaunia Govt. Secondary School</p></div>
     `;
 }
 
-
 /* ==========================================================================
-   LANGUAGES
+   LANGUAGES / HOBBIES
    ========================================================================== */
 
 function updateLanguages() {
@@ -276,11 +204,6 @@ function updateLanguages() {
         <p>English — Fluent</p>
     `;
 }
-
-
-/* ==========================================================================
-   HOBBIES
-   ========================================================================== */
 
 function updateHobbies() {
     document.getElementById("hobbies-container").innerHTML = `
@@ -293,29 +216,25 @@ function updateHobbies() {
     `;
 }
 
-
 /* ==========================================================================
    CONTACT INFO
    ========================================================================== */
 
 function updateContactInfo(text) {
-    const emailMatch = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
-    const phoneMatch = text.match(/\+?\d[\d\s-]{7,14}\d/);
+    const email = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i) || "mail.ashikulislam@gmail.com";
+    const phone = text.match(/\+?\d[\d\s-]{7,14}\d/) || "+8801753932582";
 
     document.querySelector(".contact-info").innerHTML = `
-        <p>Email: ${emailMatch || "mail.ashikulislam@gmail.com"}</p>
-        <p>Phone: ${phoneMatch || "+8801753932582"}</p>
+        <p>Email: ${email}</p>
+        <p>Phone: ${phone}</p>
     `;
 }
 
-
 /* ==========================================================================
-   MY WORKS
+   MY WORKS (DRIVE)
    ========================================================================== */
 
 async function loadMyWorks() {
-    if (!gapiLoaded) return;
-
     const response = await gapi.client.drive.files.list({
         q: `'${MY_WORKS_FOLDER_ID}' in parents and mimeType = 'application/vnd.google-apps.folder'`,
         fields: "files(id, name)"
@@ -342,68 +261,14 @@ async function loadFilesInSubfolder(folderId) {
     });
 
     const container = document.getElementById(`folder-${folderId}`);
-
-    response.result.files.forEach(file => {
-        container.appendChild(createPreviewCard(file));
-    });
-}
-
-
-/* ==========================================================================
-   CONTENTS VIDEOS
-   ========================================================================== */
-
-const CHANNEL_ID = "UCD56-UAP7KCQNiICDla2w7Q";
-const API_KEY = "YOUR_API_KEY_HERE";
-
-async function loadContentsVideos() {
-    await gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"]
-    });
-
-    const response = await gapi.client.youtube.search.list({
-        part: "snippet",
-        channelId: CHANNEL_ID,
-        maxResults: 50,
-        order: "date",
-        type: "video"
-    });
-
-    const container = document.getElementById("contents-video-container");
     container.innerHTML = "";
 
-    response.result.items.forEach(video => {
-        container.appendChild(createPreviewCard(video));
+    response.result.files.forEach(file => {
+        container.appendChild(createDrivePreviewCard(file));
     });
 }
 
-function createPreviewCard(video) {
-    const card = document.createElement("div");
-    card.className = "preview-card";
-
-    const thumbnailUrl = video.snippet.thumbnails.medium.url;
-    const videoId = video.id.videoId;
-    const videoTitle = video.snippet.title;
-    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-
-    card.innerHTML = `
-        <a href="${videoUrl}" target="_blank">
-            <img src="${thumbnailUrl}" alt="${videoTitle}" class="preview-thumbnail">
-            <h3 class="preview-title">${videoTitle}</h3>
-        </a>
-    `;
-
-    return card;
-}
-
-
-
-/* ==========================================================================
-   PREVIEW CARD BUILDER
-   ========================================================================== */
-
-function createPreviewCard(file) {
+function createDrivePreviewCard(file) {
     const card = document.createElement("div");
     card.className = "preview-card";
 
@@ -422,9 +287,48 @@ function createPreviewCard(file) {
     return card;
 }
 
+/* ==========================================================================
+   YOUTUBE CONTENTS
+   ========================================================================== */
+
+async function loadYouTubeContents() {
+    const response = await gapi.client.youtube.search.list({
+        part: "snippet",
+        channelId: CONTENTS_CHANNEL_ID,
+        maxResults: 50,
+        order: "date",
+        type: "video"
+    });
+
+    const container = document.getElementById("contents-video-container");
+    container.innerHTML = "";
+
+    response.result.items.forEach(video => {
+        container.appendChild(createYouTubePreviewCard(video));
+    });
+}
+
+function createYouTubePreviewCard(video) {
+    const videoId = video.id.videoId;
+    const title = video.snippet.title;
+    const thumbnail = video.snippet.thumbnails.medium.url;
+    const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+    const card = document.createElement("div");
+    card.className = "preview-card";
+
+    card.innerHTML = `
+        <a href="${url}" target="_blank">
+            <img src="${thumbnail}" class="preview-thumbnail" />
+            <h3 class="preview-title">${title}</h3>
+        </a>
+    `;
+
+    return card;
+}
 
 /* ==========================================================================
-   CURSOR + EFFECTS
+   VISUAL EFFECTS
    ========================================================================== */
 
 function initCursor() {
@@ -434,16 +338,10 @@ function initCursor() {
     document.addEventListener("mousemove", e => {
         c.style.left = e.pageX + "px";
         c.style.top = e.pageY + "px";
-
         f.style.left = e.pageX - 10 + "px";
         f.style.top = e.pageY - 10 + "px";
     });
 }
-
-
-/* ==========================================================================
-   SCROLL REVEAL
-   ========================================================================== */
 
 function initScrollReveal() {
     const elements = document.querySelectorAll(".reveal");
@@ -460,11 +358,6 @@ function initScrollReveal() {
     reveal();
 }
 
-
-/* ==========================================================================
-   PARALLAX
-   ========================================================================== */
-
 function initParallax() {
     const content = document.querySelector(".hero-content");
 
@@ -474,11 +367,6 @@ function initParallax() {
         content.style.transform = `translateY(calc(-50% + ${y}px)) translateX(${x}px)`;
     });
 }
-
-
-/* ==========================================================================
-   PARTICLES ANIMATION
-   ========================================================================== */
 
 function startParticles() {
     const canvas = document.getElementById("particle-canvas");
@@ -521,23 +409,12 @@ function startParticles() {
     animate();
 }
 
-
-/* ==========================================================================
-   LOADER
-   ========================================================================== */
-
 function fadeOutLoader() {
     const loader = document.getElementById("loading-screen");
     loader.style.opacity = "0";
     setTimeout(() => loader.style.display = "none", 600);
 }
 
-
-/* ==========================================================================
-   SCROLL TO SECTION
-   ========================================================================== */
-
 function scrollToSection(id) {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-           }
-
+}
